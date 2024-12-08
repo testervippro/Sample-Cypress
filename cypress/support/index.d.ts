@@ -1,0 +1,3 @@
+interface SqlResponse {
+    value: any; 
+  }
