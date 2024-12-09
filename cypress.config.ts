@@ -29,32 +29,34 @@ async function queryDatabase(query) {
 
 async function getAPI(url: string) {
   try {
-   const result = await auth.userClient.api(url).get();
+    const result = await auth.userClient.api(url).get();
     return result;
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
-async function updateAPI(url: string, body:any) {
-let _body = JSON.stringify(body)
-   
-  
+async function updateAPI(url: string, body: any) {
+  let _body = JSON.stringify(body);
+
   try {
-   const result = await auth.userClient.api(url).update(_body);
-    return null
+    const result = await auth.userClient.api(url).update(_body);
+    return null;
   } catch (error) {
     console.error("Error:", error);
   }
 }
 
 export default defineConfig({
+  env: {},
+  reporter: "mochawesome",
+
   e2e: {
     setupNodeEvents(on, config) {
       //sql db
       on("task", {
         queryDatabase(query) {
-          return queryDatabase(query);
+          //return queryDatabase(query);
         },
       });
 
@@ -67,7 +69,7 @@ export default defineConfig({
 
       //update api
       on("task", {
-        updateAPI({url , body}) {
+        updateAPI({ url, body }) {
           return updateAPI(url, body);
         },
       });

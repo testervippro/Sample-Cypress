@@ -2,11 +2,12 @@
   "compilerOptions": {
     "target": "es2020",
     "lib": ["es2020", "dom"],
-    "types": ["cypress", "node","cypress-if"],
+    "types": ["cypress", "node", "cypress-if"],
     "module": "es2020",
     "moduleResolution": "Node",
     "allowImportingTsExtensions": true,
-    "noEmit": true  
+    "noEmit": true
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }
