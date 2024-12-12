@@ -28,67 +28,59 @@ import { userClient } from "../graph/auth";
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-export{}
-// declare 
+
+// declare
 declare global {
   namespace Cypress {
     interface Chainable {
-        sqlServer(query: string): Chainable<any>;
-        getAPI(url: string): Chainable<any>;
-        updateAPI(url: string, body: any): Chainable<any>;
+      sqlServer(query: string): Chainable<any>;
+      getAPI(url: string): Chainable<any>;
+      updateAPI(url: string, body: any): Chainable<any>;
+      selectProduct(query: string): Chainable<any>;
+      executePowerShell(path: string): Chainable<any>;
     }
   }
 }
 
-// Cypress.Commands.add('sqlServer', (query: string) => {
-//     if (!query) {
-//       throw new Error('Query must be set');
-//   }
-  
-//     return cy.task('queryDatabase', query).then((response: unknown) => {
-//       let result: any[] = []; 
+Cypress.Commands.add("executePowerShell", (scriptPath) => {
+  return cy
+    .exec(`powershell -File ${scriptPath}`, { failOnNonZeroExit: false })
+    .then((result) => {
+      return {
+        code: result.code,
+        stdout: result.stdout.trim(),
+        stderr: result.stderr.trim(),
+      };
+    });
+});
 
-//       const typedResponse = response as SqlResponse[];
-  
-//       const flatten = (r: any): any => Array.isArray(r) && r.length === 1 ? flatten(r[0]) : r;
-  
-//       if (typedResponse) {
-//         for (let i in typedResponse) {
-//           result[i] = [];
-//           for (let c in typedResponse[i]) {
-//             result[i][c] = typedResponse[i][c].value; 
-//           }
-//         }
-//         result = flatten(result);
-//       } else {
-//         result = typedResponse; 
-//       }
-  
-//       return result;
-//     });
-//   });
+Cypress.Commands.add("selectProduct", (productName) => {
+  cy.get("h4.card-title").each(($el, index, $list) => {
+    if ($el.text().includes(productName)) {
+      cy.get("button.btn.btn-info").eq(index).click();
+    }
+  });
+});
 
-Cypress.Commands.add('sqlServer', (query: string) => {
+Cypress.Commands.add("sqlServer", (query: string) => {
   if (!query) {
-    throw new Error('Query must be set');
-}
-  return cy.task('queryDatabase', query)
+    throw new Error("Query must be set");
+  }
+  return cy.task("queryDatabase", query);
 });
 
 //get API
-Cypress.Commands.add('getAPI', (url: string) => {
+Cypress.Commands.add("getAPI", (url: string) => {
   if (!url) {
-    throw new Error('Query must be set');
-}
-  return cy.task('getAPI', url)
+    throw new Error("Query must be set");
+  }
+  return cy.task("getAPI", url);
 });
 
 //update API
-Cypress.Commands.add('updateAPI', (url: string, body:any) => {
+Cypress.Commands.add("updateAPI", (url: string, body: any) => {
   if (!url) {
-    throw new Error('Query must be set');
-}
-  return cy.task('updateAPI',{ url,body})
+    throw new Error("Query must be set");
+  }
+  return cy.task("updateAPI", { url, body });
 });
-
-  

@@ -1,0 +1,100 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-12-09T18:03:19.921Z",
+    "end": "2024-12-09T18:03:32.122Z",
+    "duration": 12201,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "cbf25dbb-b9cd-4658-9e30-27d298c5dd78",
+      "title": "",
+      "fullFile": "cypress\\e2e\\spec02.cy.ts",
+      "file": "cypress\\e2e\\spec02.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "c58f1e4f-c501-48d6-a06c-346dfd9e1a5a",
+          "title": "My Second Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "My FirstTest case",
+              "fullTitle": "My Second Test Suite My FirstTest case",
+              "timedOut": null,
+              "duration": 9009,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const homePage = new _support_page_HomePage__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\nconst productPage = new _support_page_ProductPage__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\ncy.visit(\"https://rahulshettyacademy.com\" + \"/angularpractice/\");\nhomePage.getEditBox().type(this.data.name);\nhomePage.getGender().select(this.data.gender);\nhomePage.getTwoWayDataBinding().should(\"have.value\", this.data.name);\nhomePage.getEditBox().should(\"have.attr\", \"minlength\", \"2\");\nhomePage.getEntrepreneaur().should(\"be.disabled\");\nhomePage.getShopTab().click();\nCypress.config(\"defaultCommandTimeout\", 8000);\nthis.data.productName.forEach(function (element) {\n    cy.selectProduct(element);\n});\nproductPage.checkOutButton().click();\nlet sum = 0;\ncy.get(\"tr td:nth-child(4) strong\")\n    .each(($el, index, $list) => {\n    const amount = $el.text();\n    let res = amount.split(\" \");\n    res = res[1].trim();\n    sum = Number(sum) + Number(res);\n})\n    .then(function () {\n    cy.log(sum);\n});\ncy.get(\"h3 strong\").then(function (element) {\n    const amount = element.text();\n    var res = amount.split(\" \");\n    var total = res[1].trim();\n    expect(Number(total)).to.equal(sum);\n});\ncy.contains(\"Checkout\").click();\ncy.get(\"#country\").type(\"India\");\ncy.get(\".suggestions > ul > li > a\").click();\ncy.get(\"#checkbox2\").click({ force: true });\ncy.get('input[type=\"submit\"]').click();\n//cy.get('.alert').should('have.text','Success! Thank you! Your order will be delivered in next few weeks :-).')\ncy.get(\".alert\").then(function (element) {\n    const actualText = element.text();\n    expect(actualText.includes(\"Success\")).to.be.true;\n});",
+              "err": {},
+              "uuid": "7b89d8a3-19f9-4046-89c6-69fb35ee3d9b",
+              "parentUUID": "c58f1e4f-c501-48d6-a06c-346dfd9e1a5a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "7b89d8a3-19f9-4046-89c6-69fb35ee3d9b"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 9009,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}
