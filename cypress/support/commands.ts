@@ -37,23 +37,22 @@ declare global {
       getAPI(url: string): Chainable<any>;
       updateAPI(url: string, body: any): Chainable<any>;
       selectProduct(query: string): Chainable<any>;
-      executePowerShell( path :string) :Chainable<any>;
+      executePowerShell(path: string): Chainable<any>;
     }
   }
 }
 
-
-Cypress.Commands.add('executePowerShell', (scriptPath) => {
-  return cy.exec(`powershell -File ${scriptPath}`, { failOnNonZeroExit: false })
+Cypress.Commands.add("executePowerShell", (scriptPath) => {
+  return cy
+    .exec(`powershell -File ${scriptPath}`, { failOnNonZeroExit: false })
     .then((result) => {
       return {
         code: result.code,
         stdout: result.stdout.trim(),
-        stderr: result.stderr.trim()
+        stderr: result.stderr.trim(),
       };
     });
 });
-
 
 Cypress.Commands.add("selectProduct", (productName) => {
   cy.get("h4.card-title").each(($el, index, $list) => {
