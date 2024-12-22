@@ -30,22 +30,23 @@ describe(
       productPage.checkOutButton().click();
       let sum: any = 0;
 
-      cy.get("tr td:nth-child(4) strong")
-        .each(($el, index, $list) => {
-          const amount = $el.text();
-          let res: any = amount.split(" ");
-          res = res[1].trim();
-          sum = Number(sum) + Number(res);
-        })
-        .then(function () {
-          cy.log(sum);
-        });
+     cy.get("tr td:nth-child(4) strong")
+  .then(($elements) => {
+    const sum = [...$elements]// coppy jquery object -> js array
+      .map((el) => el.innerText.match(/\d+(\.\d+)?/)?.[0] || "0") // Extracts the numeric part and . 
+      .reduce((acc, num) => acc + Number(num), 0);
+
+    cy.log(`Total Sum: ${sum}`);
+  });
+
       cy.get("h3 strong").then(function (element) {
         const amount = element.text();
-        var res = amount.split(" ");
-        var total = res[1].trim();
+        let res = amount.split(" ");
+        let total = res[1].trim();
         expect(Number(total)).to.equal(sum);
       });
+
+
       cy.contains("Checkout").click();
       cy.get("#country").type("India");
       cy.get(".suggestions > ul > li > a").click();
