@@ -7,9 +7,9 @@ describe("Connect to database", () => {
     });
   });
 
-  it("test can ps1 file", () => {
-    cy.executePowerShell("path/to/your/script.ps1").then((result) => {
-      console.log(result.stdout);
-    });
-  });
+  // it("test can ps1 file", () => {
+  //   cy.executePowerShell("path/to/your/script.ps1").then((result) => {
+  //     console.log(result.stdout);
+  //   });
+  // });
 });

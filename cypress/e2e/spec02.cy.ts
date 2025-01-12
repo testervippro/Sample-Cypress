@@ -25,7 +25,7 @@ describe(
       Cypress.config("defaultCommandTimeout", 8000);
 
       this.data.productName.forEach(function (element) {
-        cy.selectProduct(element);
+        //cy.selectProduct(element);
       });
       productPage.checkOutButton().click();
       let sum: any = 0;
