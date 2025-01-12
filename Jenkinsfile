@@ -34,6 +34,17 @@ pipeline {
                 }
             }
         }
+              stage('Fix Permissions') {
+            steps {
+                sh '''
+                    echo "Fixing permissions..."
+                    chmod -R 755 ${WORKSPACE}/cypress/reports/
+                    chmod 644 ${WORKSPACE}/cypress/reports/mochawesome-html-report/Cypress_HMTL_Report.html
+                    echo "Permissions updated."
+                    ls -la ${WORKSPACE}/cypress/reports/mochawesome-html-report/
+                '''
+            }
+        }
 
         stage('Publish Report') {
             steps {
