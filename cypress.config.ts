@@ -23,6 +23,7 @@ import { defineConfig } from "cypress";
 // }
 
 export default defineConfig({
+  projectId: 'jz2xs6', // A
   env: {},
   reporter: "mochawesome",
 
