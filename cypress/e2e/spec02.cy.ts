@@ -27,24 +27,32 @@ describe(
       this.data.productName.forEach(function (element) {
         cy.selectProduct(element);
       });
+
       productPage.checkOutButton().click();
-      let sum: any = 0;
+
+  let sumExpect: number  = 0;
 
      cy.get("tr td:nth-child(4) strong")
   .then(($elements) => {
-    const sum = [...$elements]// coppy jquery object -> js array
+    sumExpect = [...$elements]// coppy jquery object -> js array
       .map((el) => el.innerText.match(/\d+(\.\d+)?/)?.[0] || "0") // Extracts the numeric part and . 
       .reduce((acc, num) => acc + Number(num), 0);
 
-    cy.log(`Total Sum: ${sum}`);
+    cy.log(`Total Sum: ${sumExpect}`);
   });
 
-      cy.get("h3 strong").then(function (element) {
-        const amount = element.text();
-        let res = amount.split(" ");
-        let total = res[1].trim();
-        expect(Number(total)).to.equal(sum);
-      });
+  cy.get("h3 strong").then(function (element) {
+    const amount = element.text().trim();  // Get the text and trim whitespace
+    const match = amount.match(/\d+/);     // Match only the digits (this will capture the number)
+    
+    if (match) {
+      const total = Number(match[0]);     // Convert the matched string to a number
+      expect(total).to.equal(sumExpect);     // Replace with your expected value
+    } else {
+      throw new Error("No valid amount found");
+    }
+  });
+  
 
 
       cy.contains("Checkout").click();
