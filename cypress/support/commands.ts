@@ -37,16 +37,18 @@ declare global {
         updateAPI(url: string, body: any): Chainable<any>;
         getMicrosoftDenfenderPolicy( path :string):Chainable<any>;
         setMicrosoftDenfenderPolicy( path :string):Chainable<any>;
+        selectProduct( name :string):Chainable<any>;
     }
   }
 }
 
-Cypress.Commands.add('sqlServer', (query: string) => {
-  if (!query) {
-    throw new Error('Query must be set');
-}
-  return cy.task('queryDatabase', query)
-});
+Cypress.Commands.add("selectProduct",(productName:any)=> {
+  cy.get("h4.card-title").each(($el , index , $list) => {
+      if($el.text().includes(productName)){
+        cy.get("button.btn.btn-infor").eq(index).click()
+      }
+  })
+})
 
 //get API
 Cypress.Commands.add('getAPI', (url: string) => {
