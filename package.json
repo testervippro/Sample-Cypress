@@ -15,13 +15,19 @@
     "mochawesome": "^7.1.3",
     "ms": "^2.1.3",
     "mssql": "^11.0.1",
-    "typescript-eslint": "^8.13.0"
+    "typescript-eslint": "^8.13.0",
+    "mocha": "^8.2.1",
+    "mochawesome-merge": "^4.2.0",
+    "mochawesome-report-generator": "^5.1.0"
   },
   "name": "cypress",
   "version": "1.0.0",
   "scripts": {
-    "cypress:report": "cypress run --reporter=html" ,
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cleanup": "rm -fr cypress/reports",
+    "merge_reports": "mochawesome-merge cypress/reports/mochawesome-report/*.json > output.json",
+    "mochawesome_report": "marge --reportDir cypress/reports/mochawesome-html-report -t Cypress_Test_Report -p Cypress_HMTL_Report -f Cypress_HMTL_Report --charts true output.json",
+    "cy_dashboard": "cypress run --record --key aeed922c-98af-4143-9e77-f97c6c900754",
+    "cy:report": "npm run cleanup && npm run cy_dashboard && npm run merge_reports && npm run mochawesome_report"
   },
   "keywords": [],
   "author": "",
