@@ -12,13 +12,14 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "cypress": "^13.17.0",
     "dotenv": "^16.4.5",
+    "http-server": "^14.1.1",
+    "mocha": "^8.2.1",
     "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.2.0",
+    "mochawesome-report-generator": "^5.1.0",
     "ms": "^2.1.3",
     "mssql": "^11.0.1",
-    "typescript-eslint": "^8.13.0",
-    "mocha": "^8.2.1",
-    "mochawesome-merge": "^4.2.0",
-    "mochawesome-report-generator": "^5.1.0"
+    "typescript-eslint": "^8.13.0"
   },
   "name": "cypress",
   "version": "1.0.0",
@@ -27,7 +28,9 @@
     "merge_reports": "mochawesome-merge cypress/reports/mochawesome-report/*.json > output.json",
     "mochawesome_report": "marge --reportDir cypress/reports/mochawesome-html-report -t Cypress_Test_Report -p Cypress_HMTL_Report -f Cypress_HMTL_Report --charts true output.json",
     "cy_dashboard": "cypress run --record --key 3dcf9687-91f6-4a3f-ba19-7fc58b89692b",
-    "cy:report": "npm run cleanup && npm run cy_dashboard && npm run merge_reports && npm run mochawesome_report"
+    "cy:report": "npm run cleanup && npm run cy_dashboard && npm run merge_reports && npm run mochawesome_report",
+    "cy:run-report": "npx cypress run && npx mochawesome-merge cypress/reports/mochawesome-report/*.json > cypress/reports/mochawesome-report/output.json && npx mochawesome-report-generator cypress/reports/mochawesome-report/output.json --output cypress/reports/mochawesome-report"
+    
   },
   "keywords": [],
   "author": "",
