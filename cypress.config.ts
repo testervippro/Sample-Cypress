@@ -26,7 +26,12 @@ export default defineConfig({
   projectId: 'jz2xs6', // A
   env: {},
   reporter: "mochawesome",
-
+  reporterOptions: {
+    reportDir: 'cypress/reports/mochawesome-report',
+    overwrite: false,
+    html: false,
+    json: true,
+  },
   e2e: {
     setupNodeEvents(on, config) {
       //sql db
