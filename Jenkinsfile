@@ -14,7 +14,7 @@ pipeline {
 
         stage('Run Cypress Tests and Generate Report') {
             steps {
-                sh 'npm run cy:report' // Run the cy:report script
+                sh 'npm run cy:run-report' // Run the cy:report script
             }
         }
 
