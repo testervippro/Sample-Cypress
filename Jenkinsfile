@@ -41,7 +41,7 @@ pipeline {
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
                     keepAll: true,
-                    reportDir: 'cypress/reports/mochawesome-html-report', // Ensure this path is correct
+                    reportDir: 'cypress/reports/mochawesome-html-report/', // Ensure this path is correct
                     reportFiles: 'Cypress_HMTL_Report.html', // Ensure this matches the report file name
                     reportName: 'Mochawesome Report',
                     reportTitles: 'Cypress Test Results'
