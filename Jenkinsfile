@@ -65,7 +65,7 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed - check test results'
-            mail to: 'team@example.com', subject: 'Pipeline Failed', body: 'Cypress tests failed in Jenkins'
+        
         }
     }
 }
