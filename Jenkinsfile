@@ -27,9 +27,9 @@ pipeline {
             }
         }
 
-        stage('Create Report Directories') {
+        stage('Create Report Directory') {
             steps {
-                sh 'mkdir -p cypress/reports/junit'
+                sh 'mkdir -p ${JUNIT_REPORT_DIR}'
             }
         }
 
@@ -39,9 +39,10 @@ pipeline {
             }
         }
 
-        stage('Debug Reports') {
+        stage('Debug JUnit Reports') {
             steps {
-                sh 'ls -l cypress/reports/junit'
+                echo "JUNIT_REPORT_DIR: ${env.JUNIT_REPORT_DIR}"
+                sh 'ls -l ${JUNIT_REPORT_DIR}'
             }
         }
 
