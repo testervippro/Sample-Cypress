@@ -6,38 +6,48 @@ pipeline {
     }
 
     environment {
-        // Set the Cypress cache folder to a directory within the workspace
-        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
+        REPORT_DIR = "${WORKSPACE}/cypress/reports"
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                // Create the cache directory if it doesn't exist
-                sh 'mkdir -p ${CYPRESS_CACHE_FOLDER}'
-                // Install dependencies
-                sh 'npm ci'
+                sh 'npm ci' // Install dependencies
             }
         }
 
         stage('Run Cypress Tests and Generate Report') {
             steps {
-                // Run the Cypress tests and generate the report
-                sh 'npm run cy:run-report'
+                sh 'npm run cy:run-junit-report' // Run Cypress tests and generate JUnit report
             }
         }
 
-        stage('Publish Report') {
+        stage('Ensure Report Directory Exists') {
             steps {
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'cypress/reports/mochawesome-html-report/', // Ensure this path is correct
-                    reportFiles: 'Cypress_HMTL_Report.html', // Ensure this matches the report file name
-                    reportName: 'Mochawesome Report',
-                    reportTitles: 'Cypress Test Results'
-                ])
+                script {
+                    // Define the JUnit report directory
+                    def junitReportDir = "${REPORT_DIR}/junit"
+
+                    // Check if the directory exists
+                    if (!fileExists(junitReportDir)) {
+                        echo "JUnit report directory does not exist. Creating it now..."
+                        sh "mkdir -p ${junitReportDir}"
+                    } else {
+                        echo "JUnit report directory already exists: ${junitReportDir}"
+                    }
+                }
+            }
+        }
+
+        stage('Publish JUnit Report') {
+            steps {
+                junit '**/cypress/reports/junit/results-*.xml' // Publish the JUnit XML report
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying....' // Deployment step
             }
         }
     }
