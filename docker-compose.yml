@@ -1,0 +1,12 @@
+version: '3'
+services:
+
+  e2e:
+    image: cypress
+    build: ./e2e
+    container_name: cypress
+  
+    command: npx cypress run --spec "cypress/e2e/spec02.cy.ts"
+    volumes:
+      - ./e2e/cypress:/app/cypress
+      - ./e2e/cypress.config.ts:/app/cypress.config.ts

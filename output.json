@@ -12,13 +12,13 @@
     "hasOther": false,
     "skipped": 0,
     "hasSkipped": false,
-    "start": "2025-01-12T16:16:32.622Z",
-    "end": "2025-01-12T16:16:49.365Z",
-    "duration": 16743
+    "start": "2025-01-12T17:08:41.369Z",
+    "end": "2025-01-12T17:08:56.502Z",
+    "duration": 15133
   },
   "results": [
     {
-      "uuid": "9458e48a-2c18-4e1d-badb-6e4c5c1f615d",
+      "uuid": "86492983-d2d2-4cc9-a1be-85ce60f7ee59",
       "title": "",
       "fullFile": "cypress/e2e/spec01.cy.ts",
       "file": "cypress/e2e/spec01.cy.ts",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "24e5a7ca-afa6-46d0-b5db-1b7814fd1b39",
+          "uuid": "a5d18158-2775-4664-8297-b45e01b14848",
           "title": "Connect to database",
           "fullFile": "",
           "file": "",
@@ -47,8 +47,8 @@
               "context": null,
               "code": "cy.sqlServer(query).then((result) => {\n    cy.log(result.recordset[0].JobId);\n});",
               "err": {},
-              "uuid": "377fd7fb-88bc-47bb-a0c7-333d515cbe07",
-              "parentUUID": "24e5a7ca-afa6-46d0-b5db-1b7814fd1b39",
+              "uuid": "fd54486a-505f-4129-8453-79bebdcfe5f2",
+              "parentUUID": "a5d18158-2775-4664-8297-b45e01b14848",
               "isHook": false,
               "skipped": false
             }
@@ -57,7 +57,7 @@
           "passes": [],
           "failures": [],
           "pending": [
-            "377fd7fb-88bc-47bb-a0c7-333d515cbe07"
+            "fd54486a-505f-4129-8453-79bebdcfe5f2"
           ],
           "skipped": [],
           "duration": 0,
@@ -76,7 +76,7 @@
       "_timeout": 2000
     },
     {
-      "uuid": "185bf631-7766-4601-a58d-f488388fc787",
+      "uuid": "851085f7-fc0b-4d27-92a4-9acf927dae72",
       "title": "",
       "fullFile": "cypress/e2e/spec02.cy.ts",
       "file": "cypress/e2e/spec02.cy.ts",
@@ -85,7 +85,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "8423156b-1603-46b7-ad3e-6a7f71aa403a",
+          "uuid": "4f80326f-6b6d-4bdf-8699-3f710ca88af5",
           "title": "My Second Test Suite",
           "fullFile": "",
           "file": "",
@@ -96,7 +96,7 @@
               "title": "My FirstTest case",
               "fullTitle": "My Second Test Suite My FirstTest case",
               "timedOut": null,
-              "duration": 9057,
+              "duration": 9064,
               "state": "passed",
               "speed": "medium",
               "pass": true,
@@ -105,20 +105,20 @@
               "context": null,
               "code": "const homePage = new _support_page_HomePage__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\nconst productPage = new _support_page_ProductPage__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\ncy.visit(\"https://rahulshettyacademy.com\" + \"/angularpractice/\");\nhomePage.getEditBox().type(this.data.name);\nhomePage.getGender().select(this.data.gender);\nhomePage.getTwoWayDataBinding().should(\"have.value\", this.data.name);\nhomePage.getEditBox().should(\"have.attr\", \"minlength\", \"2\");\nhomePage.getEntrepreneaur().should(\"be.disabled\");\nhomePage.getShopTab().click();\nCypress.config(\"defaultCommandTimeout\", 8000);\nthis.data.productName.forEach(function (element) {\n    cy.selectProduct(element);\n});\nproductPage.checkOutButton().click();\nlet sumExpect = 0;\ncy.get(\"tr td:nth-child(4) strong\")\n    .then(($elements) => {\n    sumExpect = [...$elements] // coppy jquery object -> js array\n        .map((el) => el.innerText.match(/\\d+(\\.\\d+)?/)?.[0] || \"0\") // Extracts the numeric part and . \n        .reduce((acc, num) => acc + Number(num), 0);\n    cy.log(`Total Sum: ${sumExpect}`);\n});\ncy.get(\"h3 strong\").then(function (element) {\n    const amount = element.text().trim(); // Get the text and trim whitespace\n    const match = amount.match(/\\d+/); // Match only the digits (this will capture the number)\n    if (match) {\n        const total = Number(match[0]); // Convert the matched string to a number\n        expect(total).to.equal(sumExpect); // Replace with your expected value\n    }\n    else {\n        throw new Error(\"No valid amount found\");\n    }\n});\ncy.contains(\"Checkout\").click();\ncy.get(\"#country\").type(\"India\");\ncy.get(\".suggestions > ul > li > a\").click();\ncy.get(\"#checkbox2\").click({ force: true });\ncy.get('input[type=\"submit\"]').click();\n//cy.get('.alert').should('have.text','Success! Thank you! Your order will be delivered in next few weeks :-).')\ncy.get(\".alert\").then(function (element) {\n    const actualText = element.text();\n    expect(actualText.includes(\"Success\")).to.be.true;\n});",
               "err": {},
-              "uuid": "3a97c45d-32cf-4d8e-8fc2-b6f073da5c37",
-              "parentUUID": "8423156b-1603-46b7-ad3e-6a7f71aa403a",
+              "uuid": "12c9b28e-b397-490c-a1cf-4c5ecf8d4ba4",
+              "parentUUID": "4f80326f-6b6d-4bdf-8699-3f710ca88af5",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
           "passes": [
-            "3a97c45d-32cf-4d8e-8fc2-b6f073da5c37"
+            "12c9b28e-b397-490c-a1cf-4c5ecf8d4ba4"
           ],
           "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 9057,
+          "duration": 9064,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000
