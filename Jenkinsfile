@@ -17,5 +17,28 @@ pipeline {
                 }
             }
         }
+
+        stage('Publish Reports') {
+            steps {
+                script {
+                    // Archive JUnit test reports
+                    junit 'cypress/reports/junit/*.xml' // Adjust the path to match your JUnit report location
+                }
+                
+                script {
+                    // Optional: Archive HTML reports (e.g., Cypress HTML results)
+                    archiveArtifacts artifacts: 'cypress/reports/html/**/*', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Ensure logs or other artifacts are archived, even if the build fails
+                archiveArtifacts artifacts: 'cypress/logs/**/*', allowEmptyArchive: true
+            }
+        }
     }
 }
