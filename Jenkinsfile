@@ -7,7 +7,6 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"
         JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
         EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com'
     }
@@ -31,7 +30,6 @@ pipeline {
         stage('Create Report Directories') {
             steps {
                 sh 'mkdir -p cypress/reports/junit'
-                sh 'mkdir -p cypress/reports/mochawesome-report'
             }
         }
 
@@ -44,22 +42,13 @@ pipeline {
         stage('Debug Reports') {
             steps {
                 sh 'ls -l cypress/reports/junit'
-                sh 'ls -l cypress/reports/mochawesome-report'
             }
         }
 
         stage('Publish Reports') {
             steps {
+                // Publish JUnit XML reports
                 junit "${env.JUNIT_REPORT_DIR}/*.xml"
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: "${env.HTML_REPORT_DIR}",
-                    reportFiles: 'index.html',
-                    reportName: 'Mochawesome Report',
-                    reportTitles: 'Cypress Test Results'
-                ])
             }
         }
 
@@ -88,7 +77,6 @@ pipeline {
                                 <li><strong>Status:</strong> ${currentBuild.currentResult}</li>
                                 <li><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
                                 <li><strong>Jenkins Server:</strong> <a href="https://ed1f-116-96-46-98.ngrok-free.app">Visit Jenkins</a></li>
-                                <li><strong>Mochawesome Report:</strong> <a href="${env.BUILD_URL}/HTML_20Report">View Mochawesome Report</a></li>
                                 <li><strong>Build URL:</strong> <a href="${env.BUILD_URL}">Open Build Details</a></li>
                                 <li><strong>Git Branch:</strong> ${gitBranch}</li>
                                 <li><strong>Git Commit:</strong> ${gitCommit}</li>
