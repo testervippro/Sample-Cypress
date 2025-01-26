@@ -5,9 +5,9 @@
     "passes": 0,
     "pending": 1,
     "failures": 0,
-    "start": "2025-01-26T14:54:49.076Z",
-    "end": "2025-01-26T14:54:49.144Z",
-    "duration": 68,
+    "start": "2025-01-26T15:15:17.274Z",
+    "end": "2025-01-26T15:15:17.490Z",
+    "duration": 216,
     "testsRegistered": 1,
     "passPercent": null,
     "pendingPercent": 100,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "adef4a31-1782-4d8d-bc46-90dd01a418cc",
+      "uuid": "aeb56c96-f472-4cf2-918e-a5014444aa7b",
       "title": "",
       "fullFile": "cypress/e2e/spec01.cy.ts",
       "file": "cypress/e2e/spec01.cy.ts",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "5cf9ffe3-1633-474c-a683-839e0f5f2242",
+          "uuid": "7c512ef9-334b-44df-890c-839fac8a355c",
           "title": "Connect to database",
           "fullFile": "",
           "file": "",
@@ -47,8 +47,8 @@
               "context": null,
               "code": "cy.sqlServer(query).then((result) => {\n    cy.log(result.recordset[0].JobId);\n});",
               "err": {},
-              "uuid": "30f67d6f-0cd9-4b28-8f5d-422bc6fc68fb",
-              "parentUUID": "5cf9ffe3-1633-474c-a683-839e0f5f2242",
+              "uuid": "3b32542b-82af-4e4e-b582-12167d4f9059",
+              "parentUUID": "7c512ef9-334b-44df-890c-839fac8a355c",
               "isHook": false,
               "skipped": false
             }
@@ -57,7 +57,7 @@
           "passes": [],
           "failures": [],
           "pending": [
-            "30f67d6f-0cd9-4b28-8f5d-422bc6fc68fb"
+            "3b32542b-82af-4e4e-b582-12167d4f9059"
           ],
           "skipped": [],
           "duration": 0,

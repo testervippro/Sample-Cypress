@@ -5,9 +5,9 @@
     "passes": 1,
     "pending": 0,
     "failures": 0,
-    "start": "2025-01-26T14:54:53.137Z",
-    "end": "2025-01-26T14:55:08.661Z",
-    "duration": 15524,
+    "start": "2025-01-26T15:15:20.184Z",
+    "end": "2025-01-26T15:15:35.429Z",
+    "duration": 15245,
     "testsRegistered": 1,
     "passPercent": 100,
     "pendingPercent": 0,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "f16d94be-b29b-4143-9265-18a9b0fbcab5",
+      "uuid": "80107259-d8b0-402a-808f-542d1d65ab6a",
       "title": "",
       "fullFile": "cypress/e2e/spec02.cy.ts",
       "file": "cypress/e2e/spec02.cy.ts",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "e47cd1ba-46ab-4195-a372-2b028ca4fb49",
+          "uuid": "479d2de2-8529-47a6-a6ad-f2ae0ebf0f80",
           "title": "My Second Test Suite",
           "fullFile": "",
           "file": "",
@@ -38,7 +38,7 @@
               "title": "My FirstTest case",
               "fullTitle": "My Second Test Suite My FirstTest case",
               "timedOut": null,
-              "duration": 10686,
+              "duration": 11143,
               "state": "passed",
               "speed": "slow",
               "pass": true,
@@ -47,20 +47,20 @@
               "context": null,
               "code": "const homePage = new _support_page_HomePage__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\nconst productPage = new _support_page_ProductPage__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\ncy.visit(\"https://rahulshettyacademy.com\" + \"/angularpractice/\");\nhomePage.getEditBox().type(this.data.name);\nhomePage.getGender().select(this.data.gender);\nhomePage.getTwoWayDataBinding().should(\"have.value\", this.data.name);\nhomePage.getEditBox().should(\"have.attr\", \"minlength\", \"2\");\nhomePage.getEntrepreneaur().should(\"be.disabled\");\nhomePage.getShopTab().click();\nCypress.config(\"defaultCommandTimeout\", 8000);\nthis.data.productName.forEach(function (element) {\n    cy.selectProduct(element);\n});\nproductPage.checkOutButton().click();\nlet sumExpect = 0;\ncy.get(\"tr td:nth-child(4) strong\")\n    .then(($elements) => {\n    sumExpect = [...$elements] // coppy jquery object -> js array\n        .map((el) => el.innerText.match(/\\d+(\\.\\d+)?/)?.[0] || \"0\") // Extracts the numeric part and . \n        .reduce((acc, num) => acc + Number(num), 0);\n    cy.log(`Total Sum: ${sumExpect}`);\n});\ncy.get(\"h3 strong\").then(function (element) {\n    const amount = element.text().trim(); // Get the text and trim whitespace\n    const match = amount.match(/\\d+/); // Match only the digits (this will capture the number)\n    if (match) {\n        const total = Number(match[0]); // Convert the matched string to a number\n        expect(total).to.equal(sumExpect); // Replace with your expected value\n    }\n    else {\n        throw new Error(\"No valid amount found\");\n    }\n});\ncy.contains(\"Checkout\").click();\ncy.get(\"#country\").type(\"India\");\ncy.get(\".suggestions > ul > li > a\").click();\ncy.get(\"#checkbox2\").click({ force: true });\ncy.get('input[type=\"submit\"]').click();\n//cy.get('.alert').should('have.text','Success! Thank you! Your order will be delivered in next few weeks :-).')\ncy.get(\".alert\").then(function (element) {\n    const actualText = element.text();\n    expect(actualText.includes(\"Success\")).to.be.true;\n});",
               "err": {},
-              "uuid": "a4f7b44a-8ced-45b3-99d8-27ad43e2667e",
-              "parentUUID": "e47cd1ba-46ab-4195-a372-2b028ca4fb49",
+              "uuid": "08483ede-74cd-4193-8fff-301ca8cf3a88",
+              "parentUUID": "479d2de2-8529-47a6-a6ad-f2ae0ebf0f80",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
           "passes": [
-            "a4f7b44a-8ced-45b3-99d8-27ad43e2667e"
+            "08483ede-74cd-4193-8fff-301ca8cf3a88"
           ],
           "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 10686,
+          "duration": 11143,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000
