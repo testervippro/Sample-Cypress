@@ -2,16 +2,17 @@ pipeline {
     agent any
 
     tools {
-        nodejs "nodejs"
+        nodejs "nodejs" // Ensure Node.js is installed and available
     }
 
     environment {
-        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
-        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com'
+        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress" // Custom Cypress cache directory
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit" // Directory for JUnit XML reports
+        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com' // Email recipient for notifications
     }
 
     stages {
+        // Restore Cypress cache from a previous build (if available)
         stage('Restore Cypress Cache') {
             steps {
                 script {
@@ -21,9 +22,10 @@ pipeline {
             }
         }
 
+        // Install project dependencies
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                sh 'npm ci' // Clean install dependencies
             }
         }
 
@@ -35,7 +37,7 @@ pipeline {
 
         stage('Run Cypress Tests and Generate Reports') {
             steps {
-                sh 'npm run cy:run-junit-report'
+                sh 'npm run cy:run-junit-report' // Run Cypress with JUnit reporter
             }
         }
 
@@ -46,13 +48,28 @@ pipeline {
             }
         }
 
+        // Publish JUnit XML reports to Jenkins
         stage('Publish Reports') {
             steps {
-                // Publish JUnit XML reports
-                junit "${env.JUNIT_REPORT_DIR}/*.xml"
+                script {
+                    // Wait for files to be generated (retry if necessary)
+                    def filesFound = false
+                    retry(3) {
+                        filesFound = sh(script: 'ls ${JUNIT_REPORT_DIR}/*.xml', returnStatus: true) == 0
+                        if (!filesFound) {
+                            sleep(time: 5, unit: 'SECONDS') // Wait 5 seconds before retrying
+                        }
+                    }
+                    if (filesFound) {
+                        junit "${env.JUNIT_REPORT_DIR}/*.xml" // Publish JUnit XML reports
+                    } else {
+                        error "No JUnit XML files found in ${env.JUNIT_REPORT_DIR}"
+                    }
+                }
             }
         }
 
+        // Archive Cypress cache for future builds
         stage('Archive Cypress Cache') {
             steps {
                 archiveArtifacts artifacts: '.cache/Cypress/**', allowEmptyArchive: true
@@ -60,14 +77,17 @@ pipeline {
         }
     }
 
+    // Post-build actions (always run, regardless of success or failure)
     post {
         always {
             script {
+                // Gather build information
                 def gitBranch = env.GIT_BRANCH ?: 'Unknown'
                 def gitCommit = env.GIT_COMMIT ?: 'Unknown'
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
                 def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
+                // Define email subject and body
                 def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
                 def emailBody = """
                     <html>
@@ -89,6 +109,7 @@ pipeline {
                     </html>
                 """
 
+                // Send email notification
                 mail(
                     to: env.EMAIL_RECIPIENT,
                     subject: emailSubject,
@@ -96,7 +117,7 @@ pipeline {
                     mimeType: 'text/html'
                 )
             }
-            echo 'Pipeline completed.'
+            echo 'Pipeline completed.' // Log completion message
         }
 
         success {
