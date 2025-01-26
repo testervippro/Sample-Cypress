@@ -2,21 +2,20 @@ pipeline {
     agent any
 
     tools {
-        nodejs "nodejs" // Ensure Node.js is available
+        nodejs "nodejs"
     }
 
     environment {
-        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress" // Custom Cypress cache directory
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report" // Mochawesome report directory
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit" // JUnit report directory
-        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com' // Replace with the recipient's email address
+        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
+        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com'
     }
 
     stages {
         stage('Restore Cypress Cache') {
             steps {
                 script {
-                    // Restore the Cypress cache from the previous build
                     sh 'mkdir -p .cache/Cypress'
                     sh 'cp -r /path/to/archived/cache/.cache/Cypress/* .cache/Cypress/ || true'
                 }
@@ -25,28 +24,39 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci' // Install dependencies
+                sh 'npm ci'
+            }
+        }
+
+        stage('Create Report Directories') {
+            steps {
+                sh 'mkdir -p cypress/reports/junit'
+                sh 'mkdir -p cypress/reports/mochawesome-report'
             }
         }
 
         stage('Run Cypress Tests and Generate Reports') {
             steps {
-                sh 'npm run cy:run-junit-report' 
+                sh 'npm run cy:run-junit-report'
+            }
+        }
+
+        stage('Debug Reports') {
+            steps {
+                sh 'ls -l cypress/reports/junit'
+                sh 'ls -l cypress/reports/mochawesome-report'
             }
         }
 
         stage('Publish Reports') {
             steps {
-                // Publish JUnit XML reports
                 junit "${env.JUNIT_REPORT_DIR}/*.xml"
-
-                // Publish Mochawesome HTML report
                 publishHTML([
                     allowMissing: false,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
                     reportDir: "${env.HTML_REPORT_DIR}",
-                    reportFiles: 'index.html', // Ensure this matches the report file name
+                    reportFiles: 'index.html',
                     reportName: 'Mochawesome Report',
                     reportTitles: 'Cypress Test Results'
                 ])
@@ -55,7 +65,6 @@ pipeline {
 
         stage('Archive Cypress Cache') {
             steps {
-                // Archive the Cypress cache for future builds
                 archiveArtifacts artifacts: '.cache/Cypress/**', allowEmptyArchive: true
             }
         }
@@ -64,13 +73,11 @@ pipeline {
     post {
         always {
             script {
-                // Get additional environment information
                 def gitBranch = env.GIT_BRANCH ?: 'Unknown'
                 def gitCommit = env.GIT_COMMIT ?: 'Unknown'
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
                 def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
-                // Define email subject and body
                 def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
                 def emailBody = """
                     <html>
@@ -93,7 +100,6 @@ pipeline {
                     </html>
                 """
 
-                // Send email notification
                 mail(
                     to: env.EMAIL_RECIPIENT,
                     subject: emailSubject,
@@ -101,7 +107,7 @@ pipeline {
                     mimeType: 'text/html'
                 )
             }
-            echo 'Pipeline completed.' // Log completion message
+            echo 'Pipeline completed.'
         }
 
         success {
