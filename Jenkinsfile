@@ -11,15 +11,15 @@ pipeline {
     }
 
     stages {
-         stage('Restore Cypress Cache') {
-        steps {
-            script {
-                sh """
-                    mkdir -p .cache/Cypress
-                    cp -r ${WORKSPACE}/cache/Cypress/* .cache/Cypress/ || echo "No cache found"
-                """
+        stage('Restore Cypress Cache') {
+            steps {
+                script {
+                    sh """
+                        mkdir -p .cache/Cypress
+                        cp -r ${WORKSPACE}/cache/Cypress/* .cache/Cypress/ || echo "No cache found"
+                    """
+                }
             }
-        
         }
 
         stage('Install Dependencies') {
@@ -42,7 +42,6 @@ pipeline {
 
         stage('Publish Reports') {
             steps {
-                // Publish JUnit XML reports
                 junit "${env.JUNIT_REPORT_DIR}/*.xml"
             }
         }
