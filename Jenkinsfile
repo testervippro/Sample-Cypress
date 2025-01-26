@@ -7,7 +7,8 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "./cypress/reports/junit"
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
+        
         EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com'
     }
 
@@ -27,15 +28,10 @@ pipeline {
             }
         }
 
-        stage('Create Report Directories') {
-            steps {
-                sh 'mkdir -p cypress/reports/junit'
-            }
-        }
 
         stage('Run Cypress Tests and Generate Reports') {
             steps {
-                sh 'npm run cy:run-junit-report'
+                sh 'npm run cy:run-report-junit'
             }
         }
 
