@@ -33,7 +33,8 @@
     "mochawesome_report": "marge --reportDir cypress/reports/mochawesome-html-report -t Cypress_Test_Report -p Cypress_HMTL_Report -f Cypress_HMTL_Report --charts true output.json",
     "cy_dashboard": "cypress run --record --key 3dcf9687-91f6-4a3f-ba19-7fc58b89692b",
     "cy:report-cy-dashboard": "npm run cleanup && npm run cy_dashboard && npm run merge_reports && npm run mochawesome_report",
-    "cy:run-report": "npm run cleanup && npx cypress run &&npm run merge_reports && npm run mochawesome_report"
+    "cy:run-report": "npm run cleanup && npx cypress run &&npm run merge_reports && npm run mochawesome_report",
+    "cy:run-junit-report": "npx cypress run --reporter mocha-junit-reporter --reporter-options mochaFile=cypress/reports/junit/results-[hash].xml"
   },
   "keywords": [],
   "author": "",
