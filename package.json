@@ -33,8 +33,7 @@
     "mochawesome_report": "marge --reportDir cypress/reports/mochawesome-html-report -t Cypress_Test_Report -p Cypress_HMTL_Report -f Cypress_HMTL_Report --charts true output.json",
     "cy_dashboard": "cypress run --record --key 3dcf9687-91f6-4a3f-ba19-7fc58b89692b",
     "cy:report-cy-dashboard": "npm run cleanup && npm run cy_dashboard && npm run merge_reports && npm run mochawesome_report",
-    "cy:run-report": "npm run cleanup && npx cypress run &&npm run merge_reports && npm run mochawesome_report",
-    "create-reports-dir": "mkdir -p cypress/reports/mochawesome cypress/reports/junit",
+    "cy:run-report": "npx cypress run && npx mochawesome-merge cypress/reports/mochawesome-report/*.json > cypress/reports/mochawesome-report/output.json && npx mochawesome-report-generator cypress/reports/mochawesome-report/output.json --output cypress/reports/mochawesome-report",
     "cy:run-junit-report": "npm run cleanup && npm run create-reports-dir && cypress run"
   },
   "keywords": [],

@@ -5,9 +5,9 @@
     "passes": 0,
     "pending": 1,
     "failures": 0,
-    "start": "2025-01-12T17:08:41.369Z",
-    "end": "2025-01-12T17:08:41.458Z",
-    "duration": 89,
+    "start": "2025-01-26T14:51:58.450Z",
+    "end": "2025-01-26T14:51:58.592Z",
+    "duration": 142,
     "testsRegistered": 1,
     "passPercent": null,
     "pendingPercent": 100,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "86492983-d2d2-4cc9-a1be-85ce60f7ee59",
+      "uuid": "806109e2-8948-4dac-bbfc-7f4fa5dae86d",
       "title": "",
       "fullFile": "cypress/e2e/spec01.cy.ts",
       "file": "cypress/e2e/spec01.cy.ts",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "a5d18158-2775-4664-8297-b45e01b14848",
+          "uuid": "b053179e-1a5f-45b4-b53d-097cdbefe46f",
           "title": "Connect to database",
           "fullFile": "",
           "file": "",
@@ -47,8 +47,8 @@
               "context": null,
               "code": "cy.sqlServer(query).then((result) => {\n    cy.log(result.recordset[0].JobId);\n});",
               "err": {},
-              "uuid": "fd54486a-505f-4129-8453-79bebdcfe5f2",
-              "parentUUID": "a5d18158-2775-4664-8297-b45e01b14848",
+              "uuid": "ba0370d3-f728-43d2-8092-7f8089975e8d",
+              "parentUUID": "b053179e-1a5f-45b4-b53d-097cdbefe46f",
               "isHook": false,
               "skipped": false
             }
@@ -57,7 +57,7 @@
           "passes": [],
           "failures": [],
           "pending": [
-            "fd54486a-505f-4129-8453-79bebdcfe5f2"
+            "ba0370d3-f728-43d2-8092-7f8089975e8d"
           ],
           "skipped": [],
           "duration": 0,
@@ -84,7 +84,7 @@
       "options": {
         "quiet": false,
         "reportFilename": "mochawesome",
-        "saveHtml": false,
+        "saveHtml": true,
         "saveJson": true,
         "consoleReporter": "spec",
         "useInlineDiffs": false,
@@ -94,9 +94,10 @@
     },
     "marge": {
       "options": {
+        "id": "default",
         "reportDir": "cypress/reports/mochawesome-report",
         "overwrite": false,
-        "html": false,
+        "html": true,
         "json": true
       },
       "version": "6.2.0"

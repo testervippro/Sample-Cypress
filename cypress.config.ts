@@ -30,7 +30,7 @@ export default defineConfig({
   reporterOptions: {
     reporterEnabled: 'mochawesome, mocha-junit-reporter',
     mochawesomeReporterOptions: {
-      reportDir: 'cypress/reports/mochawesome', // Directory for Mochawesome reports
+      reportDir: 'cypress/reports/mochawesome-report',// Directory for Mochawesome reports
       overwrite: false, // Do not overwrite previous reports
       html: true, // Enable HTML report generation
       json: true, // Enable JSON report generation
