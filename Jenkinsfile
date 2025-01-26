@@ -5,7 +5,24 @@ pipeline {
         nodejs "nodejs" // Ensure Node.js is available
     }
 
+    environment {
+        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress" // Custom Cypress cache directory
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report" // Mochawesome report directory
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit" // JUnit report directory
+        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com' // Replace with the recipient's email address
+    }
+
     stages {
+        stage('Restore Cypress Cache') {
+            steps {
+                script {
+                    // Restore the Cypress cache from the previous build
+                    sh 'mkdir -p .cache/Cypress'
+                    sh 'cp -r /path/to/archived/cache/.cache/Cypress/* .cache/Cypress/ || true'
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm ci' // Install dependencies
@@ -17,8 +34,6 @@ pipeline {
                 sh 'npm run cy:run-report' // Run the cy:run-report script
             }
         }
-
-
 
         stage('Publish Reports') {
             steps {
@@ -38,6 +53,12 @@ pipeline {
             }
         }
 
+        stage('Archive Cypress Cache') {
+            steps {
+                // Archive the Cypress cache for future builds
+                archiveArtifacts artifacts: '.cache/Cypress/**', allowEmptyArchive: true
+            }
+        }
     }
 
     post {
@@ -47,7 +68,7 @@ pipeline {
                 def gitBranch = env.GIT_BRANCH ?: 'Unknown'
                 def gitCommit = env.GIT_COMMIT ?: 'Unknown'
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
-                def buildExecutor = env.BUILD_USER_ID ?: 'Unknown'
+                def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
                 // Define email subject and body
                 def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
