@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/jenkins"
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
     }
 
     stages {
@@ -31,8 +31,7 @@ pipeline {
         stage('Run Cypress Tests with Jenkins Reporter') {
             steps {
                 sh """
-                    mkdir -p cypress/reports/jenkins
-                    npm run cypress-jenkins
+                    npm run cy:run-report-junit
                 """
             }
         }
