@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
+        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/jenkins"
     }
 
     stages {
@@ -28,21 +28,24 @@ pipeline {
             }
         }
 
-        stage('Run Cypress Tests and Generate Reports') {
+        stage('Run Cypress Tests with Jenkins Reporter') {
             steps {
-                sh 'npm run cy:run-report-junit'
+                sh """
+                    mkdir -p cypress/reports/jenkins
+                    npm run cypress-jenkins
+                """
             }
         }
 
-        stage('Debug Reports') {
+        stage('Verify Reports') {
             steps {
-                sh 'ls -l cypress/reports/junit'
+                sh "ls -la ${env.JUNIT_REPORT_DIR}"
             }
         }
 
-        stage('Publish Reports') {
+        stage('Publish JUnit Report') {
             steps {
-                junit "${env.JUNIT_REPORT_DIR}/*.xml"
+                junit "${env.JUNIT_REPORT_DIR}/report.xml"
             }
         }
 
@@ -55,15 +58,15 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline completed.'
+            echo 'Pipeline execution completed'
+            cleanWs()
         }
-
         success {
-            echo 'Tests completed successfully!'
+            echo 'All stages completed successfully!'
         }
-
         failure {
-            echo 'Tests failed!'
+            echo 'Pipeline failed - check test results'
+            mail to: 'team@example.com', subject: 'Pipeline Failed', body: 'Cypress tests failed in Jenkins'
         }
     }
 }
