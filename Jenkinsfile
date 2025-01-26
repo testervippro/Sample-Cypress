@@ -26,7 +26,7 @@ pipeline {
                     // Publish HTML reports to Jenkins
                     publishHTML([
                         reportName: 'Mochawesome Report',
-                        reportDir: 'cypress/reports/mochawesome-html-report',  // Path to the report folder
+                        reportDir: 'cypress/reports/mochawesome-report',  // Path to the report folder
                         reportFiles: 'index.html',  // The main file to be displayed
                         keepAll: true,  // Optional: keep all reports from previous runs
                         allowMissing: false  // Optional: whether missing reports should fail the build
