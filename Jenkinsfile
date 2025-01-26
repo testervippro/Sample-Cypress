@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs "Node" // Ensure Node.js is available
+        nodejs "node" // Ensure Node.js is available
     }
 
     stages {
