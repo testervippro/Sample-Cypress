@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
+        JUNIT_REPORT_DIR = "./cypress/reports/junit"
         EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com'
     }
 
