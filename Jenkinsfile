@@ -1,71 +1,24 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "nodejs"
-    }
-
-    environment {
-        CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress"
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit"
-    }
-
     stages {
-        stage('Restore Cypress Cache') {
+        stage('Setup Display') {
             steps {
-                script {
-                    sh """
-                        mkdir -p .cache/Cypress
-                        cp -r ${WORKSPACE}/cache/Cypress/* .cache/Cypress/ || echo "No cache found"
-                    """
-                }
+                sh 'Xvfb :99 -screen 0 1280x1024x24 -ac +extension GLX +render -noreset &'
+                sh 'export DISPLAY=:99'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Run Tests') {
             steps {
-                sh 'npm ci'
+                sh 'npm run cy:run-report-junit'
             }
         }
 
-        stage('Run Cypress Tests with Jenkins Reporter') {
+        stage('Cleanup') {
             steps {
-                sh """
-                    npm run cy:run-report-junit
-                """
+                sh 'pkill Xvfb'  // Clean up display server
             }
-        }
-
-        stage('Verify Reports') {
-            steps {
-                sh "ls -la ${env.JUNIT_REPORT_DIR}"
-            }
-        }
-
-        stage('Publish JUnit Report') {
-            steps {
-                junit "${env.JUNIT_REPORT_DIR}/report.xml"
-            }
-        }
-
-        stage('Archive Cypress Cache') {
-            steps {
-                archiveArtifacts artifacts: '.cache/Cypress/**', allowEmptyArchive: true
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline execution completed'
-            cleanWs()
-        }
-        success {
-            echo 'All stages completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed - check test results'
-        
         }
     }
 }
