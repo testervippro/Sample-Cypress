@@ -1,6 +1,0 @@
-<testsuites name="Mocha Tests">
-  <testsuite name="My Second Test Suite" tests="1" errors="0" failures="0" skipped="0" timestamp="2025-01-26T16:12:12" time="28.309">
-    <testcase classname="My Second Test Suite" name="My FirstTest case" time="16.292">
-    </testcase>
-  </testsuite>
-</testsuites>

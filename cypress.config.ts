@@ -37,12 +37,7 @@ export default defineConfig({
     },
     mochaJunitReporterReporterOptions: {
       mochaFile: 'cypress/reports/junit/results-[hash].xml', // JUnit XML report location
-    },
-    mochaJenkinsReporterReporterOptions: {
-      junit_report_name: 'Cypress Tests', // Name of the test suite in the report
-      junit_report_path: 'cypress/reports/jenkins/results.xml', // Output path for Jenkins report
-      junit_report_stack: 1, // Enable stack traces for failed tests
-    },
+    }
   },
 
   e2e: {

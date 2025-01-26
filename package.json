@@ -19,7 +19,6 @@
     "dotenv": "^16.4.5",
     "http-server": "^14.1.1",
     "mocha": "^8.2.1",
-    "mocha-jenkins-reporter": "^0.4.8",
     "mochawesome-merge": "^4.2.0",
     "mochawesome-report-generator": "^5.1.0",
     "ms": "^2.1.3",
