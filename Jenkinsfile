@@ -7,8 +7,8 @@ pipeline {
 
     environment {
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
-        ZIP_REPORT_URL = "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"  // URL for the ZIP report
-        FINAL_ZIP_REPORT_PATH = "${WORKSPACE}/cypress/reports/jenkins/Mochawesome_Report.zip"  // Final destination for the ZIP file
+        //ZIP_REPORT_URL = "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"  // URL for the ZIP report
+        //FINAL_ZIP_REPORT_PATH = "${WORKSPACE}/cypress/reports/jenkins/Mochawesome_Report.zip"  // Final destination for the ZIP file
     }
 
     stages {
@@ -23,22 +23,22 @@ pipeline {
             }
         }
 
-        stage('Download ZIP Report') {
-            steps {
-                script {
-                    // Download the ZIP report using curl
-                    echo "Downloading the ZIP report from: ${ZIP_REPORT_URL}"
-                    sh "curl -o ${FINAL_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
+        // stage('Download ZIP Report') {
+        //     steps {
+        //         script {
+        //             // Download the ZIP report using curl
+        //             echo "Downloading the ZIP report from: ${ZIP_REPORT_URL}"
+        //             sh "curl -o ${FINAL_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
 
-                    // Check if the ZIP file has been successfully downloaded
-                    if (fileExists("${FINAL_ZIP_REPORT_PATH}")) {
-                        echo "ZIP report downloaded to: ${FINAL_ZIP_REPORT_PATH}"
-                    } else {
-                        error "Failed to download ZIP report from: ${ZIP_REPORT_URL}"
-                    }
-                }
-            }
-        }
+        //             // Check if the ZIP file has been successfully downloaded
+        //             if (fileExists("${FINAL_ZIP_REPORT_PATH}")) {
+        //                 echo "ZIP report downloaded to: ${FINAL_ZIP_REPORT_PATH}"
+        //             } else {
+        //                 error "Failed to download ZIP report from: ${ZIP_REPORT_URL}"
+        //             }
+        //         }
+        //     }
+        // }
 
         // stage('Unzip Report') {
         //     steps {
@@ -84,8 +84,7 @@ pipeline {
            echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
             // Added step to echo the download link for the zipped report
             echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"
-            // Add a link to view the unzipped HTML report
-            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/cypress/reports/mochawesome-html-report/Cypress_HMTL_Report.html"
+
         }
     }
 }
