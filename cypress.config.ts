@@ -25,13 +25,19 @@ import { defineConfig } from "cypress";
 export default defineConfig({
   projectId: 'jz2xs6', // A
   env: {},
-  reporter: "mochawesome",
-  reporterOptions: {
-    reportDir: 'cypress/reports/mochawesome-report',
-    overwrite: false,
-    html: false,
-    json: true,
-  },
+    reporter: "cypress-multi-reporters",
+    reporterOptions: {
+      reporterEnabled: "mochawesome,mocha-junit-reporter",
+      mochawesomeReporterOptions: {
+        reportDir: "cypress/reports/mochawesome-report",
+        overwrite: false,
+        html: false,
+        json: true
+      },
+      mochaJunitReporterOptions: {
+        mochaFile: "cypress/reports/junit/test-results.xml"
+      }
+    },  
 
   e2e: {
     setupNodeEvents(on, config) {
