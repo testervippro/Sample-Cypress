@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report/"  // Corrected path
     
     }
 
@@ -16,7 +16,7 @@ pipeline {
                 script {
                     sh '''
                         npm ci
-                        npm run cy:run-report  # Generates mochawesome-report/output.html and ZIP report
+                        npm run cy:run-report  
                     '''
                 }
             }
