@@ -32,13 +32,27 @@ pipeline {
                 script {
                     // Step 1: Download the Mochawesome zip file from Jenkins
                     echo "Downloading Mochawesome report from ${env.MOCHA_ZIP_URL}"
-                    sh "curl -L ${env.MOCHA_ZIP_URL} -o ${env.LOCAL_ZIP_FILE}"
+                    sh """
+                        curl -L ${env.MOCHA_ZIP_URL} -o ${env.LOCAL_ZIP_FILE}
+                        if [ $? -ne 0 ]; then
+                            echo "Download failed. Retrying..."
+                            curl -L ${env.MOCHA_ZIP_URL} -o ${env.LOCAL_ZIP_FILE}
+                        fi
+                    """
 
-                    // Step 2: Unzip the downloaded file to the report directory
+                    // Step 2: Verify that the file is a valid zip
+                    echo "Verifying downloaded file type"
+                    sh "file ${env.LOCAL_ZIP_FILE}"
+
+                    // Step 3: Test the zip file integrity
+                    echo "Testing zip file integrity"
+                    sh "unzip -t ${env.LOCAL_ZIP_FILE}"
+
+                    // Step 4: Unzip the downloaded file to the report directory
                     echo "Unzipping report to ${env.HTML_REPORT_DIR}"
                     sh "unzip -o ${env.LOCAL_ZIP_FILE} -d ${env.HTML_REPORT_DIR}"
 
-                    // Step 3: Verify if the HTML report exists
+                    // Step 5: Verify if the HTML report exists
                     def reportExists = fileExists("${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html")
                     if (reportExists) {
                         echo "Report downloaded and unzipped successfully at ${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html"
