@@ -20,10 +20,10 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    // Run Cypress tests and generate reports
+                    // Run Cypress tests and generate both Mochawesome and JUnit reports
                     sh '''
                         npm ci
-                        npm run cy:run-report  // Run Cypress tests and generate reports
+                        npm run cy:run-report-both  // Run Cypress tests and generate reports
                     '''
                 }
             }
@@ -36,6 +36,15 @@ pipeline {
                     echo "Archiving reports..."
                     archiveArtifacts artifacts: 'cypress/reports/**/*', allowEmptyArchive: true
                     sh "zip -r ${ARCHIVE_ZIP_PATH} cypress/reports/*"
+                }
+            }
+        }
+
+        stage('Publish JUnit Report') {
+            steps {
+                script {
+                    // Publish JUnit report for Jenkins
+                    junit '**/cypress/reports/junit/*.xml'  // Adjust the path to where your JUnit XML reports are located
                 }
             }
         }
