@@ -8,7 +8,7 @@ pipeline {
     environment {
         JENKINS_URL = 'http://localhost:8080' // Jenkins server URL
         MOCHA_ZIP_URL = "${JENKINS_URL}/job/Cypress/${env.BUILD_NUMBER}/artifact/Mochawesome_20Report.zip" // URL to the Mochawesome zip report
-        LOCAL_ZIP_FILE = "${WORKSPACE}/Mochawesome_Report.zip"  // Local path to save the zip file
+        LOCAL_ZIP_FILE = "${WORKSPACE}/localreport"  // Local path to save the zip file
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome" // Directory to store the HTML report
     }
 
