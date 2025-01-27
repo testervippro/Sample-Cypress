@@ -7,8 +7,9 @@ pipeline {
 
     environment {
         CYPRESS_CACHE_FOLDER = "${WORKSPACE}/.cache/Cypress" // Custom Cypress cache directory
-        JUNIT_REPORT_DIR = "${WORKSPACE}/cypress/reports/junit" // Directory for JUnit XML reports
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-report" // Directory for Mochawesome HTML reports
         EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com' // Email recipient for notifications
+        JENKINS_URL = 'https://ed1f-116-96-46-98.ngrok-free.app' // Dynamic Jenkins URL
     }
 
     stages {
@@ -31,39 +32,38 @@ pipeline {
 
         stage('Create Report Directory') {
             steps {
-                sh 'mkdir -p ${JUNIT_REPORT_DIR}'
+                sh 'mkdir -p ${HTML_REPORT_DIR}'
             }
         }
 
         stage('Run Cypress Tests and Generate Reports') {
             steps {
-                sh 'npm run cy:run-junit-report' // Run Cypress with JUnit reporter
+                sh 'npm run cy:run-mochawesome-report' // Run Cypress with Mochawesome reporter
             }
         }
 
-        stage('Debug JUnit Reports') {
+        stage('Debug HTML Report') {
             steps {
-                echo "JUNIT_REPORT_DIR: ${env.JUNIT_REPORT_DIR}"
-                sh 'ls -l ${JUNIT_REPORT_DIR}'
+                echo "HTML Report Directory: ${env.HTML_REPORT_DIR}"
+                sh 'ls -l ${HTML_REPORT_DIR}'
             }
         }
 
-        // Publish JUnit XML reports to Jenkins
-        stage('Publish Reports') {
+        // Publish HTML reports to Jenkins
+        stage('Publish HTML Report') {
             steps {
                 script {
-                    // Wait for files to be generated (retry if necessary)
-                    def filesFound = false
-                    retry(3) {
-                        filesFound = sh(script: 'ls ${JUNIT_REPORT_DIR}/*.xml', returnStatus: true) == 0
-                        if (!filesFound) {
-                            sleep(time: 5, unit: 'SECONDS') // Wait 5 seconds before retrying
-                        }
-                    }
-                    if (filesFound) {
-                        junit "${env.JUNIT_REPORT_DIR}/*.xml" // Publish JUnit XML reports
+                    // Check if the report exists
+                    def reportExists = fileExists("${env.HTML_REPORT_DIR}/index.html")
+                    if (reportExists) {
+                        publishHTML(target: [
+                            reportName: 'Cypress Mochawesome Report',
+                            reportDir: "${env.HTML_REPORT_DIR}",
+                            reportFiles: 'index.html',
+                            keepAll: true
+                        ])
                     } else {
-                        error "No JUnit XML files found in ${env.JUNIT_REPORT_DIR}"
+                        error "No HTML report found in ${env.HTML_REPORT_DIR}"
                     }
                 }
             }
@@ -87,7 +87,7 @@ pipeline {
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
                 def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
-                // Define email subject and body
+                // Define email subject and body with dynamic Jenkins URL
                 def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
                 def emailBody = """
                     <html>
@@ -97,7 +97,7 @@ pipeline {
                             <ul>
                                 <li><strong>Status:</strong> ${currentBuild.currentResult}</li>
                                 <li><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
-                                <li><strong>Jenkins Server:</strong> <a href="https://ed1f-116-96-46-98.ngrok-free.app">Visit Jenkins</a></li>
+                                <li><strong>Jenkins Server:</strong> <a href="${env.JENKINS_URL}">Visit Jenkins</a></li>
                                 <li><strong>Build URL:</strong> <a href="${env.BUILD_URL}">Open Build Details</a></li>
                                 <li><strong>Git Branch:</strong> ${gitBranch}</li>
                                 <li><strong>Git Commit:</strong> ${gitCommit}</li>
