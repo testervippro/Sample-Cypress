@@ -7,6 +7,7 @@ pipeline {
 
     environment {
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
+        ZIP_REPORT_PATH = "${WORKSPACE}/cypress/reports/Mochawesome_Report.zip"  // Path to the zipped report
     }
 
     stages {
@@ -17,6 +18,20 @@ pipeline {
                         npm ci
                         npm run cy:run-report  # Generates mochawesome-report/output.html
                     '''
+                }
+            }
+        }
+
+        stage('Unzip Report') {
+            steps {
+                script {
+                    // Check if the zip file exists and unzip it
+                    if (fileExists("${ZIP_REPORT_PATH}")) {
+                        echo "Unzipping the report..."
+                        sh "unzip ${ZIP_REPORT_PATH} -d ${env.HTML_REPORT_DIR}"
+                    } else {
+                        error "ZIP report file not found at ${ZIP_REPORT_PATH}"
+                    }
                 }
             }
         }
@@ -51,6 +66,8 @@ pipeline {
             echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
             // Added step to echo the download link for the zipped report
             echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"
+            // Add a link to view the unzipped HTML report
+            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/cypress/reports/mochawesome-html-report/Cypress_HMTL_Report.html"
         }
     }
 }
