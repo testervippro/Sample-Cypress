@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        HTML_REPORT_DIR = "${WORKSPACE}/mochawesome-report"  // Direct path to report
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-                        npm install
+                        npm ci
                         npm run cy:run-report  # Generates mochawesome-report/output.html
                     '''
                 }
@@ -31,8 +31,8 @@ pipeline {
 
                     publishHTML([
                         reportName: 'Mochawesome Report',
-                        reportDir: "cypress/reports/mochawesome-html-report",
-                        reportFiles: 'Cypress_HTML_Report.html',
+                        reportDir: "${env.HTML_REPORT_DIR}",
+                        reportFiles: 'Cypress_HMTL_Report.html',
                         keepAll: true,
                         allowMissing: false
                     ])
@@ -43,7 +43,8 @@ pipeline {
 
     post {
         always {
-            echo "Build ${env.BUILD_NUMBER} completed"
+            echo "Archiving mochawesome report for debugging"
+            archiveArtifacts artifacts: 'cypress/reports/mochawesome-html-report/**', allowEmptyArchive: true
             deleteDir()  // Clean workspace
         }
         success {
