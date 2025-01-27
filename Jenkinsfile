@@ -6,34 +6,30 @@ pipeline {
     }
 
     environment {
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path for the HTML report
-        ZIP_REPORT_URL = "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"  // URL to the zipped report
-        CUSTOM_ZIP_REPORT_PATH = "${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report.zip"  // Custom path for storing the zipped report
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Directory for HTML report
+        ZIP_REPORT_URL = "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"  // URL for the ZIP report
+        CUSTOM_ZIP_REPORT_PATH = "${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report.zip"  // Local path for the ZIP report
     }
 
     stages {
-        stage('Run Tests') {
+        stage('Setup and Run Tests') {
             steps {
                 script {
+                    // Install dependencies and run tests
                     sh '''
                         npm ci
-                        npm run cy:run-report  # Generates mochawesome-report/output.html
+                        npm run cy:run-report  // Generates mochawesome report
                     '''
                 }
             }
         }
 
-        stage('Download Report') {
+        stage('Download ZIP Report') {
             steps {
                 script {
-                    // Echoing the download URL for reference
-                    echo "Download report ZIP: ${ZIP_REPORT_URL}"
-                    
-                    // Downloading the ZIP file
-                    echo "Downloading the Mochawesome ZIP report..."
-                    sh """
-                        curl -o ${CUSTOM_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}
-                    """
+                    // Log the download URL and download the ZIP report
+                    echo "Downloading ZIP report from: ${ZIP_REPORT_URL}"
+                    sh "curl -o ${CUSTOM_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
                 }
             }
         }
@@ -41,12 +37,12 @@ pipeline {
         stage('Unzip Report') {
             steps {
                 script {
-                    // Check if the zip file exists and unzip it into the custom directory (CUSTOM_ZIP_REPORT_PATH)
+                    // Unzip the downloaded report if it exists
                     if (fileExists("${CUSTOM_ZIP_REPORT_PATH}")) {
-                        echo "Unzipping the report..."
-                      sh "unzip ${CUSTOM_ZIP_REPORT_PATH} -d ${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report"
+                        echo "Unzipping report to destination..."
+                        sh "unzip ${CUSTOM_ZIP_REPORT_PATH} -d ${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report"
                     } else {
-                        error "ZIP report file not found at ${CUSTOM_ZIP_REPORT_PATH}"
+                        error "ZIP report not found at ${CUSTOM_ZIP_REPORT_PATH}"
                     }
                 }
             }
@@ -55,18 +51,20 @@ pipeline {
         stage('Publish HTML Report') {
             steps {
                 script {
-                    // Verify report exists before publishing
-                    if (!fileExists("${WORKSPACE}/cypress/reports/mochawesome-html-report/Cypress_HMTL_Report.html")) {
-                        error "HTML report not found at ${WORKSPACE}/cypress/reports/mochawesome-html-report/Cypress_HMTL_Report.html"
+                    // Publish the HTML report if it exists
+                    def reportFile = "${HTML_REPORT_DIR}/Cypress_HMTL_Report.html"
+                    if (fileExists(reportFile)) {
+                        echo "Publishing HTML report: ${reportFile}"
+                        publishHTML([
+                            reportName: 'Mochawesome Report',
+                            reportDir: "${HTML_REPORT_DIR}",
+                            reportFiles: 'Cypress_HMTL_Report.html',
+                            keepAll: true,
+                            allowMissing: false
+                        ])
+                    } else {
+                        error "HTML report not found at ${reportFile}"
                     }
-
-                    publishHTML([
-                        reportName: 'Mochawesome Report',
-                        reportDir: "${WORKSPACE}/cypress/reports/mochawesome-html-report",
-                        reportFiles: 'Cypress_HMTL_Report.html',
-                        keepAll: true,
-                        allowMissing: false
-                    ])
                 }
             }
         }
@@ -74,20 +72,33 @@ pipeline {
 
     post {
         always {
-            echo "Archiving mochawesome report for debugging"
+            // Archive all HTML reports and clean workspace
+            echo "Archiving HTML reports for debugging"
             archiveArtifacts artifacts: 'cypress/reports/mochawesome-html-report/**', allowEmptyArchive: true
             deleteDir()  // Clean workspace
         }
-        success {
-            echo "Archiving zipped report in custom directory..."
-            // Archive the zipped report to the custom storage path
-            archiveArtifacts artifacts: "${env.CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
 
-             // Provide the URL for downloading the zipped report from the custom location
-        echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"
-        
-        // Add a link to view the unzipped HTML report
-        echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
+        success {
+            // Archive ZIP report and provide links for downloading and viewing reports
+            echo "Archiving ZIP report"
+            archiveArtifacts artifacts: "${CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
+
+            echo "Download ZIP Report: ${ZIP_REPORT_URL}"
+            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
+        }
+
+        // Clean after build
+        always {
+            cleanWs(
+                cleanWhenNotBuilt: false,
+                deleteDirs: true,
+                disableDeferredWipeout: true,
+                notFailBuild: true,
+                patterns: [
+                    [pattern: '.gitignore', type: 'INCLUDE'],
+                    [pattern: '.propsfile', type: 'EXCLUDE']
+                ]
+            )
         }
     }
 }
