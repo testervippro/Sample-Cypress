@@ -36,10 +36,5 @@ pipeline {
         }
     }
 
-    post {
-        always {
-            // Archive the HTML report as a build artifact (optional)
-            archiveArtifacts artifacts: 'cypress/reports/mochawesome-report/Cypress_HMTL_Report.html', allowEmptyArchive: true
-        }
-    }
+
 }
