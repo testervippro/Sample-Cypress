@@ -23,21 +23,7 @@ pipeline {
             }
         }
 
-     
-
-        // stage('Unzip Report') {
-        //     steps {
-        //         script {
-        //             // Check if the ZIP file exists and unzip it
-        //             if (fileExists("${FINAL_ZIP_REPORT_PATH}")) {
-        //                 echo "Unzipping the report..."
-        //                 sh "unzip ${FINAL_ZIP_REPORT_PATH} -d ${env.HTML_REPORT_DIR}"
-        //             } else {
-        //                 error "ZIP report file not found at ${FINAL_ZIP_REPORT_PATH}"
-        //             }
-        //         }
-        //     }
-        // }
+    
 
         stage('Publish HTML Report') {
             steps {
@@ -58,22 +44,7 @@ pipeline {
             }
         }
 
-           stage('Download ZIP Report') {
-            steps {
-                script {
-                    // Download the ZIP report using curl
-                    echo "Downloading the ZIP report from: ${ZIP_REPORT_URL}"
-                    sh "curl -o ${FINAL_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
-
-                    // Check if the ZIP file has been successfully downloaded
-                    if (fileExists("${FINAL_ZIP_REPORT_PATH}")) {
-                        echo "ZIP report downloaded to: ${FINAL_ZIP_REPORT_PATH}"
-                    } else {
-                        error "Failed to download ZIP report from: ${ZIP_REPORT_URL}"
-                    }
-                }
-            }
-        }
+    
     }
 
     post {
