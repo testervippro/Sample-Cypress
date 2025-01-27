@@ -7,7 +7,7 @@ pipeline {
 
     environment {
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
-        ZIP_REPORT_PATH = "${WORKSPACE}/cypress/reports/Mochawesome_Report.zip"  // Path to the zipped report
+        ZIP_REPORT_PATH = "cypress/reports/Mochawesome_Report.zip"  // Relative path to the zip report
     }
 
     stages {
