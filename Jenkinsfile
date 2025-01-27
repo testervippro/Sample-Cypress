@@ -9,7 +9,7 @@ pipeline {
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report"  // Corrected path
         ZIP_REPORT_URL = "${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"  // URL for the ZIP report
         FINAL_ZIP_REPORT_PATH = "${WORKSPACE}/cypress/reports/jenkins/Mochawesome_Report.zip"  // Final destination for the ZIP file
-        SERVER_PORT = 8080  // Port to serve the HTML report
+        SERVER_PORT = 1111  // Port to serve the HTML report
     }
 
     stages {
