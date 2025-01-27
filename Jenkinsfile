@@ -50,7 +50,7 @@ pipeline {
     post {
         always {
             echo "Archiving mochawesome report for debugging"
-            archiveArtifacts artifacts: 'cypress/reports/jenkins/**', allowEmptyArchive: true
+           archiveArtifacts artifacts: 'cypress/reports/jenkins/**/*', allowEmptyArchive: true  // Corrected path pattern
             deleteDir()  // Clean workspace
         }
         success {
