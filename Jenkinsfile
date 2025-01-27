@@ -12,7 +12,7 @@ pipeline {
                     // Install npm libraries and run the tests
                     sh '''
                         npm install
-                        npm run cy:report
+                        npm run cy:run-report
                     '''
                 }
             }
