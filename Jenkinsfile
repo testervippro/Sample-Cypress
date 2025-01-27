@@ -25,8 +25,8 @@ pipeline {
             steps {
                 script {
                     // Verify report exists before publishing
-                    if (!fileExists("${env.HTML_REPORT_DIR}/output.html")) {
-                        error "HTML report not found at ${env.HTML_REPORT_DIR}/output.html"
+                    if (!fileExists("${env.HTML_REPORT_DIR}/Cypress_HMTL_Report.html")) {
+                        error "HTML report not found at ${env.HTML_REPORT_DIR}/Cypress_HMTL_Report.html"
                     }
 
                     publishHTML([
