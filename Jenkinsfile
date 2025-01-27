@@ -8,7 +8,7 @@ pipeline {
     environment {
         JENKINS_URL = 'http://localhost:8080' // Jenkins server URL
         MOCHA_ZIP_URL = "${JENKINS_URL}/job/Cypress/${env.BUILD_NUMBER}/artifact/Mochawesome_20Report.zip" // URL to the Mochawesome zip report
-        LOCAL_ZIP_FILE = "${WORKSPACE}"  // Local path to save the zip file
+        LOCAL_ZIP_FILE = "${WORKSPACE}/Mochawesome_20Report.zip"  // Correct file name to avoid duplication
         HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome" // Directory to store the HTML report
     }
 
@@ -31,15 +31,17 @@ pipeline {
             steps {
                 script {
                     // Step 1: Download the Mochawesome zip file from Jenkins
+                    echo "Downloading Mochawesome report from ${env.MOCHA_ZIP_URL}"
                     sh "curl -L ${env.MOCHA_ZIP_URL} -o ${env.LOCAL_ZIP_FILE}"
 
-                    // Step 2: Unzip the downloaded file
+                    // Step 2: Unzip the downloaded file to the report directory
+                    echo "Unzipping report to ${env.HTML_REPORT_DIR}"
                     sh "unzip -o ${env.LOCAL_ZIP_FILE} -d ${env.HTML_REPORT_DIR}"
 
-                    // Step 3: Check if the HTML report exists after unzipping
+                    // Step 3: Verify if the HTML report exists
                     def reportExists = fileExists("${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html")
                     if (reportExists) {
-                        echo "Report downloaded and unzipped at ${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html"
+                        echo "Report downloaded and unzipped successfully at ${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html"
                     } else {
                         error "HTML report not found in ${env.HTML_REPORT_DIR}"
                     }
@@ -54,6 +56,7 @@ pipeline {
                     // Check if the HTML report exists before publishing
                     def reportExists = fileExists("${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html")
                     if (reportExists) {
+                        echo "Publishing HTML report..."
                         publishHTML([
                             reportName: 'Mochawesome Report',
                             reportDir: "${env.HTML_REPORT_DIR}",  // Directory of the HTML report
