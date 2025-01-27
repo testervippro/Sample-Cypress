@@ -75,20 +75,8 @@ pipeline {
             // Archive all HTML reports and clean workspace
             echo "Archiving HTML reports for debugging"
             archiveArtifacts artifacts: 'cypress/reports/mochawesome-html-report/**', allowEmptyArchive: true
-            deleteDir()  // Clean workspace
-        }
-
-        success {
-            // Archive ZIP report and provide links for downloading and viewing reports
-            echo "Archiving ZIP report"
-            archiveArtifacts artifacts: "${CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
-
-            echo "Download ZIP Report: ${ZIP_REPORT_URL}"
-            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
-        }
-
-        // Clean after build
-        always {
+            
+            // Clean after build
             cleanWs(
                 cleanWhenNotBuilt: false,
                 deleteDirs: true,
@@ -99,6 +87,15 @@ pipeline {
                     [pattern: '.propsfile', type: 'EXCLUDE']
                 ]
             )
+        }
+
+        success {
+            // Archive ZIP report and provide links for downloading and viewing reports
+            echo "Archiving ZIP report"
+            archiveArtifacts artifacts: "${CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
+
+            echo "Download ZIP Report: ${ZIP_REPORT_URL}"
+            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
         }
     }
 }
