@@ -1,46 +1,41 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "nodejs"
-    }
-
     environment {
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-html-report/"
+        // Define Jenkins server URL as an environment variable
+        JENKINS_SERVER_URL = 'https://ed1f-116-96-46-98.ngrok-free.app'
+        EMAIL_RECIPIENT = 'cuxuanthoai@gmail.com' // Consider using Jenkins credentials
+        ARCHIVE_ZIP_PATH = "${WORKSPACE}/cypress/reports/Mochawesome_Report.zip"
     }
 
     stages {
+        stage('Preparation') {
+            steps {
+                script {
+                    echo "Preparing the environment..."
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 script {
+                    // Run Cypress tests and generate reports
                     sh '''
                         npm ci
-                        npm run cy:run-report-junit  
+                        npm run cy:run-report  // Run Cypress tests and generate reports
                     '''
                 }
             }
         }
 
-        stage('Publish HTML Report') {
+        stage('Archive Reports') {
             steps {
                 script {
-                    // Publish the HTML report from the archive
-                    publishHTML([
-                        reportName: 'Mochawesome Report',
-                        reportDir: "cypress/reports",  // Adjusted path to the reports directory
-                        reportFiles: 'mochawesome-html-report/Cypress_HMTL_Report.html',  // Adjusted to correct file path
-                        keepAll: true,
-                        allowMissing: false
-                    ])
-                }
-            }
-        }
-
-         stage('Publish JUnit Report') {
-            steps {
-                script {
-                    // Publish the JUnit test results
-                    junit '**/cypress/reports/junit/*.xml'  // Adjust the path as needed
+                    // Archive all reports and generate the ZIP file
+                    echo "Archiving reports..."
+                    archiveArtifacts artifacts: 'cypress/reports/**/*', allowEmptyArchive: true
+                    sh "zip -r ${ARCHIVE_ZIP_PATH} cypress/reports/*"
                 }
             }
         }
@@ -48,24 +43,51 @@ pipeline {
 
     post {
         always {
-            echo "Archiving mochawesome report for debugging"
-            archiveArtifacts artifacts: 'cypress/reports/**/*', allowEmptyArchive: true  // Corrected path pattern to archive reports
-            deleteDir()  // Clean workspace after the build
+            script {
+                // Get additional environment information
+                def gitBranch = env.GIT_BRANCH ?: 'Unknown'
+                def gitCommit = env.GIT_COMMIT ?: 'Unknown'
+                def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+                def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
-            // Clean workspace using cleanWs
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true,
-                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
-                               [pattern: '.propsfile', type: 'EXCLUDE']])
+                // Send email notification with HTML content
+                def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
+                def emailBody = """
+                    <html>
+                        <body>
+                            <p>Hello,</p>
+                            <p>The Jenkins build for <strong>${env.JOB_NAME}</strong> (#${env.BUILD_NUMBER}) has completed.</p>
+                            <ul>
+                                <li><strong>Status:</strong> ${currentBuild.currentResult}</li>
+                                <li><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
+                                <li><strong>Jenkins Server:</strong> <a href="${JENKINS_SERVER_URL}">Visit Jenkins</a></li>
+                                <li><strong>Cypress Test Reports:</strong> <a href="${JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/cypress/reports/Mochawesome_20Report.zip">Download Reports</a></li>
+                                <li><strong>Build URL:</strong> <a href="${env.BUILD_URL}">Open Build Details</a></li>
+                                <li><strong>Git Branch:</strong> ${gitBranch}</li>
+                                <li><strong>Git Commit:</strong> ${gitCommit}</li>
+                                <li><strong>Git Commit Message:</strong> ${gitCommitMessage}</li>
+                                <li><strong>Build Executor:</strong> ${buildExecutor}</li>
+                            </ul>
+                            <p>Best regards,<br><strong>testervippro</strong></p>
+                        </body>
+                    </html>
+                """
+
+                mail(
+                    to: EMAIL_RECIPIENT,
+                    subject: emailSubject,
+                    body: emailBody,
+                    mimeType: 'text/html'
+                )
+            }
         }
+
         success {
-            echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
-            // Added step to echo the link to view the report in Jenkins
-            echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"
-            echo "JUnit Test Results: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/testReport/"
+            echo 'Tests completed successfully!'
         }
+
+        failure {
+            echo 'Tests failed!'
         }
     }
 }
