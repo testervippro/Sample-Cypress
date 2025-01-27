@@ -31,7 +31,7 @@ pipeline {
 
                     publishHTML([
                         reportName: 'Mochawesome Report',
-                        reportDir: "${env.HTML_REPORT_DIR}",
+                        reportDir: "reports/mochawesome-html-report",
                         reportFiles: 'Cypress_HTML_Report.html',
                         keepAll: true,
                         allowMissing: false
