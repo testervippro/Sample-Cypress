@@ -67,18 +67,20 @@ pipeline {
             deleteDir()  // Clean workspace
         }
         success {
-            echo "Archiving Mochawesome Report ZIP in custom directory..."
-            
-            // Archive the zipped report from the custom directory
-            archiveArtifacts artifacts: "${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/reports/Mochawesome_Report.zip", allowEmptyArchive: true
+            script {
+                echo "Archiving Mochawesome Report ZIP in custom directory..."
+                
+                // Archive the zipped report from the custom directory
+                archiveArtifacts artifacts: "${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/reports/Mochawesome_Report.zip", allowEmptyArchive: true
 
-            // Provide the URL for downloading the zipped report from the custom location
-            def mochawesomeZipUrl = "${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/reports/Mochawesome_Report.zip"
-            echo "Download Mochawesome Report ZIP: ${mochawesomeZipUrl}"
-            
-            // View the HTML report link
-            def htmlReportUrl = "${env.CUSTOM_REPORT_PATH}/Cypress_HMTL_Report.html"
-            echo "View HTML Report: ${htmlReportUrl}"
+                // Provide the URL for downloading the zipped report from the custom location
+                def mochawesomeZipUrl = "${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/reports/Mochawesome_Report.zip"
+                echo "Download Mochawesome Report ZIP: ${mochawesomeZipUrl}"
+                
+                // View the HTML report link
+                def htmlReportUrl = "${env.CUSTOM_REPORT_PATH}/Cypress_HMTL_Report.html"
+                echo "View HTML Report: ${htmlReportUrl}"
+            }
         }
     }
 }
