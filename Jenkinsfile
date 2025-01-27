@@ -49,6 +49,8 @@ pipeline {
         }
         success {
             echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
+            // Added step to echo the download link for the zipped report
+            echo "Download report ZIP: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome%20Report/*zip*/Mochawesome%20Report.zip"
         }
     }
 }
