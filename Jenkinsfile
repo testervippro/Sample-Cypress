@@ -24,30 +24,6 @@ pipeline {
             }
         }
 
-        stage('Download ZIP Report') {
-            steps {
-                script {
-                    // Log the download URL and download the ZIP report
-                    echo "Downloading ZIP report from: ${ZIP_REPORT_URL}"
-                    sh "curl -o ${CUSTOM_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
-                }
-            }
-        }
-
-        stage('Unzip Report') {
-            steps {
-                script {
-                    // Unzip the downloaded report if it exists
-                    if (fileExists("${CUSTOM_ZIP_REPORT_PATH}")) {
-                        echo "Unzipping report to destination..."
-                        sh "unzip ${CUSTOM_ZIP_REPORT_PATH} -d ${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report"
-                    } else {
-                        error "ZIP report not found at ${CUSTOM_ZIP_REPORT_PATH}"
-                    }
-                }
-            }
-        }
-
         stage('Publish HTML Report') {
             steps {
                 script {
@@ -71,12 +47,34 @@ pipeline {
     }
 
     post {
+        success {
+            // Download ZIP report
+            echo "Downloading ZIP report from: ${ZIP_REPORT_URL}"
+            sh "curl -o ${CUSTOM_ZIP_REPORT_PATH} ${ZIP_REPORT_URL}"
+
+            // Unzip report
+            if (fileExists("${CUSTOM_ZIP_REPORT_PATH}")) {
+                echo "Unzipping report to destination..."
+                sh "unzip ${CUSTOM_ZIP_REPORT_PATH} -d ${WORKSPACE}/jobs/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report"
+            } else {
+                error "ZIP report not found at ${CUSTOM_ZIP_REPORT_PATH}"
+            }
+
+            // Archive ZIP report
+            echo "Archiving ZIP report"
+            archiveArtifacts artifacts: "${CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
+
+            echo "Download ZIP Report: ${ZIP_REPORT_URL}"
+            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
+        }
+
         always {
             // Archive all HTML reports and clean workspace
             echo "Archiving HTML reports for debugging"
             archiveArtifacts artifacts: 'cypress/reports/mochawesome-html-report/**', allowEmptyArchive: true
-            
-            // Clean after build
+            deleteDir()  // Clean workspace
+
+            // Clean workspace after build
             cleanWs(
                 cleanWhenNotBuilt: false,
                 deleteDirs: true,
@@ -87,15 +85,6 @@ pipeline {
                     [pattern: '.propsfile', type: 'EXCLUDE']
                 ]
             )
-        }
-
-        success {
-            // Archive ZIP report and provide links for downloading and viewing reports
-            echo "Archiving ZIP report"
-            archiveArtifacts artifacts: "${CUSTOM_ZIP_REPORT_PATH}", allowEmptyArchive: true
-
-            echo "Download ZIP Report: ${ZIP_REPORT_URL}"
-            echo "View HTML Report: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_Report/Cypress_HMTL_Report.html"
         }
     }
 }
