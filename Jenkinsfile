@@ -7,9 +7,10 @@ pipeline {
 
     environment {
         JENKINS_URL = 'http://localhost:8080'
-        // Path to the mochawesome HTML report
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome"
-        REPORT_FILE = "${HTML_REPORT_DIR}/mochawesome.html"
+        // Dynamically generate URL with BUILD_NUMBER and correct artifact name
+        MOCHA_ZIP_URL = "${JENKINS_URL}/job/Cypress/${env.BUILD_NUMBER}/artifact/Mochawesome_20Report.zip"
+        LOCAL_ZIP_FILE = "${WORKSPACE}/Mochawesome_Report.zip"  // Local filename with underscore
+        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-report"  // Target directory
     }
 
     stages {
@@ -18,21 +19,26 @@ pipeline {
                 script {
                     sh '''
                         npm install
-                        npm run cy:run-report  # Ensure this generates mochawesome.html in the specified directory
+                        npm run cy:run-report  # Generates mochawesome-report/output.html
                     '''
-                    // Archive the mochawesome.html file directly
-                    archiveArtifacts artifacts: 'cypress/reports/mochawesome/mochawesome.html', allowEmptyArchive: false
+                    // Archive the ZIP file (ensure your tests generate this)
+                    archiveArtifacts artifacts: 'mochawesome-report.zip', allowEmptyArchive: false
                 }
             }
         }
 
-        stage('Check Report Existence') {
+        stage('Download and Extract Report') {
             steps {
                 script {
-                    // Check if the mochawesome.html file exists in the mochawesome directory
-                    def reportExists = fileExists("${env.REPORT_FILE}")
-                    if (!reportExists) {
-                        error "HTML report not found in ${env.HTML_REPORT_DIR}"
+                    // Download artifact using dynamically generated URL
+                    sh "curl -L -o '${env.LOCAL_ZIP_FILE}' '${env.MOCHA_ZIP_URL}'"
+                    
+                    // Unzip to target directory (creates mochawesome-report/output.html)
+                    sh "unzip -o '${env.LOCAL_ZIP_FILE}' -d '${env.HTML_REPORT_DIR}'"
+                    
+                    // Verify extraction
+                    if (!fileExists("${env.HTML_REPORT_DIR}/output.html")) {
+                        error "Report extraction failed - output.html not found"
                     }
                 }
             }
@@ -43,7 +49,7 @@ pipeline {
                 publishHTML([
                     reportName: 'Mochawesome Report',
                     reportDir: "${env.HTML_REPORT_DIR}",
-                    reportFiles: 'mochawesome.html',
+                    reportFiles: 'output.html',  // Target the correct file
                     keepAll: true,
                     allowMissing: false
                 ])
@@ -53,13 +59,11 @@ pipeline {
 
     post {
         always {
-            echo 'Pipeline completed.'
+            echo "Build ${env.BUILD_NUMBER} completed"
+            deleteDir()  // Clean workspace
         }
         success {
-            echo 'Tests passed!'
-        }
-        failure {
-            echo 'Tests failed!'
+            echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
         }
     }
 }
