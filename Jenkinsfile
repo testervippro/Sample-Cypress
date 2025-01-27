@@ -15,7 +15,7 @@ pipeline {
                 script {
                     sh '''
                         npm ci
-                        npm run cy:run-report  
+                        npm run cy:run-report-junit  
                     '''
                 }
             }
@@ -32,6 +32,15 @@ pipeline {
                         keepAll: true,
                         allowMissing: false
                     ])
+                }
+            }
+        }
+
+         stage('Publish JUnit Report') {
+            steps {
+                script {
+                    // Publish the JUnit test results
+                    junit '**/cypress/reports/junit/*.xml'  // Adjust the path as needed
                 }
             }
         }
@@ -55,6 +64,8 @@ pipeline {
             echo "View report at: ${env.JENKINS_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/HTML_Report/"
             // Added step to echo the link to view the report in Jenkins
             echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip"
+            echo "JUnit Test Results: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/testReport/"
+        }
         }
     }
 }
