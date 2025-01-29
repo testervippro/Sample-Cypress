@@ -1,0 +1,107 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-01-28T13:55:34.247Z",
+    "end": "2025-01-28T13:55:57.367Z",
+    "duration": 23120,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "00416d7f-eca0-4120-92d4-b2972a52217f",
+      "title": "",
+      "fullFile": "cypress/e2e/spec02.cy.ts",
+      "file": "cypress/e2e/spec02.cy.ts",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "11f518bf-19e9-4cb4-abae-7c8688117617",
+          "title": "My Second Test Suite",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "My FirstTest case",
+              "fullTitle": "My Second Test Suite My FirstTest case",
+              "timedOut": null,
+              "duration": 15042,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const homePage = new _support_page_HomePage__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\nconst productPage = new _support_page_ProductPage__WEBPACK_IMPORTED_MODULE_1__[\"default\"]();\ncy.visit(\"https://rahulshettyacademy.com\" + \"/angularpractice/\");\nhomePage.getEditBox().type(this.data.name);\nhomePage.getGender().select(this.data.gender);\nhomePage.getTwoWayDataBinding().should(\"have.value\", this.data.name);\nhomePage.getEditBox().should(\"have.attr\", \"minlength\", \"2\");\nhomePage.getEntrepreneaur().should(\"be.disabled\");\nhomePage.getShopTab().click();\nCypress.config(\"defaultCommandTimeout\", 8000);\nthis.data.productName.forEach(function (element) {\n    cy.selectProduct(element);\n});\nproductPage.checkOutButton().click();\nlet sumExpect = 0;\ncy.get(\"tr td:nth-child(4) strong\")\n    .then(($elements) => {\n    sumExpect = [...$elements] // coppy jquery object -> js array\n        .map((el) => el.innerText.match(/\\d+(\\.\\d+)?/)?.[0] || \"0\") // Extracts the numeric part and . \n        .reduce((acc, num) => acc + Number(num), 0);\n    cy.log(`Total Sum: ${sumExpect}`);\n});\ncy.get(\"h3 strong\").then(function (element) {\n    const amount = element.text().trim(); // Get the text and trim whitespace\n    const match = amount.match(/\\d+/); // Match only the digits (this will capture the number)\n    if (match) {\n        const total = Number(match[0]); // Convert the matched string to a number\n        expect(total).to.equal(sumExpect); // Replace with your expected value\n    }\n    else {\n        throw new Error(\"No valid amount found\");\n    }\n});\ncy.contains(\"Checkout\").click();\ncy.get(\"#country\").type(\"India\");\ncy.get(\".suggestions > ul > li > a\").click();\ncy.get(\"#checkbox2\").click({ force: true });\ncy.get('input[type=\"submit\"]').click();\n//cy.get('.alert').should('have.text','Success! Thank you! Your order will be delivered in next few weeks :-).')\ncy.get(\".alert\").then(function (element) {\n    const actualText = element.text();\n    expect(actualText.includes(\"Success\")).to.be.true;\n});",
+              "err": {},
+              "uuid": "85870ed3-92bf-4c8a-8fc2-bcc38770776c",
+              "parentUUID": "11f518bf-19e9-4cb4-abae-7c8688117617",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "85870ed3-92bf-4c8a-8fc2-bcc38770776c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 15042,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "report",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "id": "default",
+        "reportDir": "cypress/reports/mochawesome-report",
+        "reportFilename": "report",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
