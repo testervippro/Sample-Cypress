@@ -1,5 +1,10 @@
-// Simple Groovy script that prints a custom message
-def call(String name) {
-    echo "Hello, ${name}! This is a message from the Groovy script."
+// common.groovy
+
+def commonMethod() {
+    echo 'This is a common method called from common.groovy'
 }
 
+def callTestMethod() {
+    echo 'This method runs Cypress tests or any other custom test logic.'
+    sh 'npm run cypress'
+}
