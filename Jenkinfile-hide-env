@@ -1,17 +1,8 @@
 pipeline {
     agent any
-
-    environment {
-        // Define Jenkins server URL and email recipient
-        //explicit env
-        JENKINS_SERVER_URL = ''
-        EMAIL_RECIPIENT = '@gmail.com' // Consider using Jenkins credentials for security
-        TELEGRAM_TOKEN = ':' // Your Telegram bot token
-        TELEGRAM_CHAT_ID = '5321745388' // Your Telegram chat ID
-    }
+    // set varibel by export cmd then use 
 
     stages {
-       
         stage('Run Tests') {
             steps {
                 script {
@@ -30,7 +21,6 @@ pipeline {
                 }
             }
         }
-
     }
 
     post {
@@ -42,8 +32,8 @@ pipeline {
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
                 def buildExecutor = env.BUILD_USER ?: 'Unknown'
                 
-                  // Archive the report and build log
-                 archiveArtifacts artifacts: 'mochawesome_report.zip', allowEmptyArchive: true
+                // Archive the report and build log
+                archiveArtifacts artifacts: 'mochawesome_report.zip', allowEmptyArchive: true
 
                 // Call function to send email
                 sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor)
@@ -55,7 +45,6 @@ pipeline {
 
         success {
             echo 'Tests completed successfully!'
-        
         }
 
         failure {
@@ -65,9 +54,7 @@ pipeline {
 }
 
 // Function to send the email report
-// Function to send the email report
 def sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor) {
-  
     echo "Sending email report..."
 
     // Construct email subject and body with HTML for hyperlinks
@@ -99,7 +86,7 @@ def sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor) {
 
     // Send email with zipped report and build log as attachments, and HTML formatted body
     emailext(
-        to: EMAIL_RECIPIENT,
+        to: env.EMAIL_RECIPIENT,
         subject: emailSubject,
         body: emailBody,
         mimeType: 'text/html',  // This sends the email in HTML format
@@ -108,16 +95,16 @@ def sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor) {
     )
     echo "Email sent successfully."
 }
+
 // Function to send the zipped report to Telegram
 def sendTelegramReport() {
     echo "Sending zipped report to Telegram..."
     sh """
         curl -X POST \
-        -F chat_id=${TELEGRAM_CHAT_ID} \
+        -F chat_id=${env.TELEGRAM_CHAT_ID} \
         -F document=@mochawesome_report.zip \
         -F caption="Mochawesome Test Report for Jenkins Build #${env.BUILD_NUMBER}" \
-        https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument
+        https://api.telegram.org/bot${env.TELEGRAM_TOKEN}/sendDocument
     """
     echo "Zipped report sent to Telegram successfully."
 }
-
