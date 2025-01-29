@@ -1,5 +1,8 @@
-// Simple Groovy script that prints a custom message
-def call(String name) {
-    echo "Hello, ${name}! This is a message from the Groovy script."
+// vars/common.groovy
+def greet(String name) {
+    echo "Hello, ${name}! This is a custom greeting from the Groovy script."
 }
 
+def farewell(String name) {
+    echo "Goodbye, ${name}! This is a custom farewell from the Groovy script."
+}
