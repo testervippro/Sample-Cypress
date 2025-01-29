@@ -1,13 +1,15 @@
 pipeline {
     agent any
-    // set varibel by export cmd then use 
 
     stages {
         stage('Run Tests') {
+            
             steps {
                 script {
                     // Run Cypress tests and generate both Mochawesome and JUnit reports
                     sh 'npm ci && npm run cy:run-report'
+                     echo "Current working directory: ${pwd()}"
+                    
                 }
             }
         }
@@ -15,6 +17,7 @@ pipeline {
         stage('Zip Mochawesome Report') {
             steps {
                 script {
+                     echo "Current working directory: ${pwd()}"
                     // Zip only the mochawesome-html-report directory
                     echo "Zipping mochawesome-html-report..."
                     sh 'zip -r mochawesome_report.zip cypress/reports/mochawesome-html-report/'
@@ -26,6 +29,7 @@ pipeline {
     post {
         always {
             script {
+                 echo "Current working directory: ${pwd()}"
                 // Get additional environment information
                 def gitBranch = env.GIT_BRANCH ?: 'Unknown'
                 def gitCommit = env.GIT_COMMIT ?: 'Unknown'
