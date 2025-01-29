@@ -1,90 +1,126 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs "nodejs" // Ensure Node.js is installed and available
-    }
-
     environment {
-        HTML_REPORT_DIR = "${WORKSPACE}/cypress/reports/mochawesome-report" // Directory for Mochawesome HTML reports
-        JENKINS_URL = 'https://ed1f-116-96-46-98.ngrok-free.app' // Dynamic Jenkins URL
-        MOCHA_ZIP_URL = 'http://localhost:8080/job/Cypress/38/Mochawesome_20Report/*zip*/Mochawesome_20Report.zip' // URL for the Mochawesome zip report
-        LOCAL_ZIP_FILE = "${WORKSPACE}/Mochawesome_Report.zip" // Local path for the downloaded zip file
+        // Define Jenkins server URL and email recipient
+        JENKINS_SERVER_URL = ''
+        EMAIL_RECIPIENT = '' // Consider using Jenkins credentials for security
+        TELEGRAM_TOKEN = '' // Your Telegram bot token
+        TELEGRAM_CHAT_ID = '5321745388' // Your Telegram chat ID
     }
 
     stages {
-        // Install project dependencies
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm ci' // Clean install dependencies
-            }
-        }
-
-        stage('Create Report Directory') {
-            steps {
-                sh 'mkdir -p ${HTML_REPORT_DIR}'
-            }
-        }
-
-        stage('Run Cypress Tests and Generate Reports') {
-            steps {
-                sh 'npm run cy:run-report' // Run Cypress with the updated report generation command
-            }
-        }
-
-        stage('Download, Unzip, and Open Report') {
+        stage('Preparation') {
             steps {
                 script {
-                    // Step 1: Download the zip file
-                    sh "curl -L ${env.MOCHA_ZIP_URL} -o ${env.LOCAL_ZIP_FILE}"
-
-                    // Step 2: Unzip the file
-                    sh "unzip -o ${env.LOCAL_ZIP_FILE} -d ${env.HTML_REPORT_DIR}"
-
-                    // Step 3: Check if the report exists
-                    def reportExists = fileExists("${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html")
-                    if (reportExists) {
-                        echo "Report downloaded and unzipped at ${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html"
-                    } else {
-                        error "HTML report not found in ${env.HTML_REPORT_DIR}"
-                    }
+                    echo "Preparing the environment..."
                 }
             }
         }
 
-        // Publish HTML reports to Jenkins
-        stage('Publish HTML Report') {
+        stage('Run Tests') {
             steps {
                 script {
-                    // Check if the report exists after unzipping
-                    def reportExists = fileExists("${env.HTML_REPORT_DIR}/Cypress_HTML_Report.html")
-                    if (reportExists) {
-                        publishHTML(target: [
-                            reportName: 'Cypress Mochawesome Report',
-                            reportDir: "${env.HTML_REPORT_DIR}",
-                            reportFiles: 'Cypress_HTML_Report.html',
-                            keepAll: true
-                        ])
-                    } else {
-                        error "No HTML report found in ${env.HTML_REPORT_DIR}"
-                    }
+                    // Run Cypress tests and generate both Mochawesome and JUnit reports
+                    sh 'npm ci && npm run cy:run-report'
                 }
             }
         }
+
+        stage('Zip Mochawesome Report') {
+            steps {
+                script {
+                    // Zip only the mochawesome-html-report directory
+                    echo "Zipping mochawesome-html-report..."
+                    sh 'zip -r mochawesome_report.zip cypress/reports/mochawesome-html-report/'
+                }
+            }
+        }
+
     }
 
-    // Post-build actions (always run, regardless of success or failure)
     post {
         always {
-            echo 'Pipeline completed.' // Log completion message
+            script {
+                // Get additional environment information
+                def gitBranch = env.GIT_BRANCH ?: 'Unknown'
+                def gitCommit = env.GIT_COMMIT ?: 'Unknown'
+                def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+                def buildExecutor = env.BUILD_USER ?: 'Unknown'
+
+                // Construct email subject and body
+                def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
+                def emailBody = """
+<html>
+<body style="font-family: Arial, sans-serif; line-height: 1.6;">
+    <h2 style="color: #333;">Hello,</h2>
+    <p>The Jenkins build for <strong>${env.JOB_NAME}</strong> (#${env.BUILD_NUMBER}) has completed.</p>
+
+    <h3 style="color: #555;">Build Details:</h3>
+    <ul style="list-style-type: none; padding: 0;">
+        <li style="padding: 5px 0;"><strong>Status:</strong> ${currentBuild.currentResult}</li>
+        <li style="padding: 5px 0;"><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
+        <li style="padding: 5px 0;">
+            <strong>Jenkins Server:</strong> 
+            <a href="${JENKINS_SERVER_URL}" style="color: #007bff; text-decoration: none;" target="_blank">View Jenkins Server</a>
+        </li>
+        <li style="padding: 5px 0;"><strong>Download Test Reports:</strong> 
+            <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/mochawesome_report.zip" style="color: #007bff; text-decoration: none;">Download</a>
+        </li>
+        <li style="padding: 5px 0;"><strong>Build URL:</strong> 
+            <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}" style="color: #007bff; text-decoration: none;">View Build</a>
+        </li>
+        <li style="padding: 5px 0;"><strong>Git Branch:</strong> ${gitBranch}</li>
+        <li style="padding: 5px 0;"><strong>Git Commit:</strong> ${gitCommit}</li>
+        <li style="padding: 5px 0;"><strong>Git Commit Message:</strong> ${gitCommitMessage}</li>
+        <li style="padding: 5px 0;"><strong>Build Executor:</strong> ${buildExecutor}</li>
+    </ul>
+
+    <p style="margin-top: 20px;">Please find the attached build log.</p>
+
+    <p>Best regards,<br/><strong>testervippro</strong></p>
+</body>
+</html>
+"""
+
+                // Archive the zipped Mochawesome report and build log
+                archiveArtifacts artifacts: 'mochawesome_report.zip', allowEmptyArchive: true
+
+                // Send email with zipped report and build log as attachments, and HTML formatted body
+                emailext(
+                    to: EMAIL_RECIPIENT,
+                    subject: emailSubject,
+                    body: emailBody,
+                    mimeType: 'text/html',  // This sends the email in HTML format
+                    attachLog: true,
+                    attachmentsPattern: '**/build.log'
+                )
+
+                // Call function to send zipped report to Telegram
+                sendTelegramReport()
+            }
         }
 
         success {
             echo 'Tests completed successfully!'
+            echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/mochawesome_report.zip"
         }
 
         failure {
             echo 'Tests failed!'
         }
     }
+}
+
+// Function to send the zipped report to Telegram
+def sendTelegramReport() {
+    echo "Sending zipped report to Telegram..."
+    sh """
+        curl -X POST \
+        -F chat_id=${TELEGRAM_CHAT_ID} \
+        -F document=@mochawesome_report.zip \
+        -F caption="Mochawesome Test Report for Jenkins Build #${env.BUILD_NUMBER}" \
+        https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendDocument
+    """
+    echo "Zipped report sent to Telegram successfully."
 }
