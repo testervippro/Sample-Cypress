@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Define Jenkins server URL and email recipient
-        JENKINS_SERVER_URL = ''
-        EMAIL_RECIPIENT = '' // Consider using Jenkins credentials for security
+        JENKINS_SERVER_URL = 'https://ed-96-46-98.ngrok-free.app'
+        EMAIL_RECIPIENT = '@gmail.com' // Consider using Jenkins credentials for security
         TELEGRAM_TOKEN = '' // Your Telegram bot token
         TELEGRAM_CHAT_ID = '5321745388' // Your Telegram chat ID
     }
@@ -48,54 +48,9 @@ pipeline {
                 def gitCommitMessage = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
                 def buildExecutor = env.BUILD_USER ?: 'Unknown'
 
-                // Construct email subject and body
-                def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
-                def emailBody = """
-<html>
-<body style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2 style="color: #333;">Hello,</h2>
-    <p>The Jenkins build for <strong>${env.JOB_NAME}</strong> (#${env.BUILD_NUMBER}) has completed.</p>
-
-    <h3 style="color: #555;">Build Details:</h3>
-    <ul style="list-style-type: none; padding: 0;">
-        <li style="padding: 5px 0;"><strong>Status:</strong> ${currentBuild.currentResult}</li>
-        <li style="padding: 5px 0;"><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
-        <li style="padding: 5px 0;">
-            <strong>Jenkins Server:</strong> 
-            <a href="${JENKINS_SERVER_URL}" style="color: #007bff; text-decoration: none;" target="_blank">View Jenkins Server</a>
-        </li>
-        <li style="padding: 5px 0;"><strong>Download Test Reports:</strong> 
-            <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/mochawesome_report.zip" style="color: #007bff; text-decoration: none;">Download</a>
-        </li>
-        <li style="padding: 5px 0;"><strong>Build URL:</strong> 
-            <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}" style="color: #007bff; text-decoration: none;">View Build</a>
-        </li>
-        <li style="padding: 5px 0;"><strong>Git Branch:</strong> ${gitBranch}</li>
-        <li style="padding: 5px 0;"><strong>Git Commit:</strong> ${gitCommit}</li>
-        <li style="padding: 5px 0;"><strong>Git Commit Message:</strong> ${gitCommitMessage}</li>
-        <li style="padding: 5px 0;"><strong>Build Executor:</strong> ${buildExecutor}</li>
-    </ul>
-
-    <p style="margin-top: 20px;">Please find the attached build log.</p>
-
-    <p>Best regards,<br/><strong>testervippro</strong></p>
-</body>
-</html>
-"""
-
-                // Archive the zipped Mochawesome report and build log
-                archiveArtifacts artifacts: 'mochawesome_report.zip', allowEmptyArchive: true
-
-                // Send email with zipped report and build log as attachments, and HTML formatted body
-                emailext(
-                    to: EMAIL_RECIPIENT,
-                    subject: emailSubject,
-                    body: emailBody,
-                    mimeType: 'text/html',  // This sends the email in HTML format
-                    attachLog: true,
-                    attachmentsPattern: '**/build.log'
-                )
-
+                // Call function to send email
+                sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor)
+                
                 // Call function to send zipped report to Telegram
                 sendTelegramReport()
             }
@@ -103,13 +58,64 @@ pipeline {
 
         success {
             echo 'Tests completed successfully!'
-            echo "Download report ZIP: ${env.JENKINS_URL}job/${env.JOB_NAME}/${env.BUILD_NUMBER}/mochawesome_report.zip"
+        
         }
 
         failure {
             echo 'Tests failed!'
         }
     }
+}
+
+// Function to send the email report
+def sendEmailReport(gitBranch, gitCommit, gitCommitMessage, buildExecutor) {
+    echo "Sending email report..."
+
+    // Construct email subject and body
+    def emailSubject = "[Jenkins Build] ${env.JOB_NAME} - ${currentBuild.currentResult} - (#${env.BUILD_NUMBER})"
+    def emailBody = """
+    <html>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #333;">Hello,</h2>
+        <p>The Jenkins build for <strong>${env.JOB_NAME}</strong> (#${env.BUILD_NUMBER}) has completed.</p>
+
+        <h3 style="color: #555;">Build Details:</h3>
+        <ul style="list-style-type: none; padding: 0;">
+            <li style="padding: 5px 0;"><strong>Status:</strong> ${currentBuild.currentResult}</li>
+            <li style="padding: 5px 0;"><strong>Build Duration:</strong> ${currentBuild.durationString}</li>
+            <li style="padding: 5px 0;">
+                <strong>Jenkins Server:</strong> 
+                <a href="${JENKINS_SERVER_URL}" style="color: #007bff; text-decoration: none;" target="_blank">View Jenkins Server</a>
+            </li>
+            <li style="padding: 5px 0;"><strong>Download Test Reports:</strong> 
+                <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}/artifact/mochawesome_report.zip" style="color: #007bff; text-decoration: none;">Download</a>
+            </li>
+            <li style="padding: 5px 0;"><strong>Build URL:</strong> 
+                <a href="${env.JENKINS_SERVER_URL}/job/${env.JOB_NAME}/${env.BUILD_NUMBER}" style="color: #007bff; text-decoration: none;">View Build</a>
+            </li>
+            <li style="padding: 5px 0;"><strong>Git Branch:</strong> ${gitBranch}</li>
+            <li style="padding: 5px 0;"><strong>Git Commit:</strong> ${gitCommit}</li>
+            <li style="padding: 5px 0;"><strong>Git Commit Message:</strong> ${gitCommitMessage}</li>
+            <li style="padding: 5px 0;"><strong>Build Executor:</strong> ${buildExecutor}</li>
+        </ul>
+
+        <p style="margin-top: 20px;">Please find the attached build log.</p>
+
+        <p>Best regards,<br/><strong>testervippro</strong></p>
+    </body>
+    </html>
+    """
+
+    // Send email with zipped report and build log as attachments, and HTML formatted body
+    emailext(
+        to: EMAIL_RECIPIENT,
+        subject: emailSubject,
+        body: emailBody,
+        mimeType: 'text/html',  // This sends the email in HTML format
+        attachLog: true,
+        attachmentsPattern: '**/build.log'
+    )
+    echo "Email sent successfully."
 }
 
 // Function to send the zipped report to Telegram
