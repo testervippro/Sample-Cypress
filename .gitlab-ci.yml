@@ -11,9 +11,9 @@ test:
   image: cypress/browsers:22.12.0
   stage: test
   script:
-    # Force install cypress-parallel at version 0.14.0 (avoid conflict)
-    - npm install cypress-parallel@^0.14.0 --force
-    # Install other dependencies using npm ci for a clean install
+    # Force install cypress-parallel and cypress-multi-reporters
+    - npm install cypress-parallel@^0.14.0 cypress-multi-reporters@^1.5.0 --force
+    # Install other dependencies using npm ci (this will exclude previously installed packages)
     - npm ci
     # Start the server in the background (optional, uncomment if needed)
     # - npm start &
