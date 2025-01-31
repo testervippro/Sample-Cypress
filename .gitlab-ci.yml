@@ -11,17 +11,18 @@ test:
   image: cypress/browsers:22.12.0
   stage: test
   script:
-  # it conflict with 
-   - npm install cypress-parallel@^0.14.0 --force
-    # Install dependencies
+    # Force install cypress-parallel at version 0.14.0 (avoid conflict)
+    - npm install cypress-parallel@^0.14.0 --force
+    # Install other dependencies using npm ci for a clean install
     - npm ci
     # Start the server in the background (optional, uncomment if needed)
     # - npm start &
-    # Run Cypress tests from the specific folder (cypress/e2e)
+    # Run Cypress tests from the specific folder (cypress/e2e) using Firefox
     - npx cypress run --browser firefox --spec 'cypress/e2e/**/*'
   artifacts:
     when: always
     paths:
+      # Uncomment to save videos/screenshots of failed tests
       # - cypress/videos/**/*.mp4
       # - cypress/screenshots/**/*.png
     expire_in: 1 day
