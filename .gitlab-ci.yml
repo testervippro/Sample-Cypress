@@ -11,12 +11,12 @@ test:
   image: cypress/browsers:22.12.0
   stage: test
   script:
-    # install dependencies
+    # Install dependencies
     - npm ci
-    # start the server in the background
+    # Start the server in the background (optional, uncomment if needed)
     # - npm start &
-    # run Cypress tests
-    - npx cypress run --browser firefox
+    # Run Cypress tests from the specific folder (cypress/e2e)
+    - npx cypress run --browser firefox --spec 'cypress/e2e/**/*'
   artifacts:
     when: always
     paths:
