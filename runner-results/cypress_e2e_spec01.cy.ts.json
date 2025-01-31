@@ -4,7 +4,7 @@
   "passes": 0,
   "pending": 1,
   "failures": 0,
-  "start": "2025-01-31T16:08:00.441Z",
-  "duration": 206,
+  "start": "2025-01-31T17:11:42.326Z",
+  "duration": 247,
   "file": "cypress/e2e/spec01.cy.ts"
 }

@@ -11,6 +11,8 @@ test:
   image: cypress/browsers:22.12.0
   stage: test
   script:
+  # it conflict with 
+   - npm install cypress-parallel@^0.14.0 --force
     # Install dependencies
     - npm ci
     # Start the server in the background (optional, uncomment if needed)

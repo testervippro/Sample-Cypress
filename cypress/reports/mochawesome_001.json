@@ -1,80 +1,22 @@
 {
   "stats": {
-    "suites": 2,
-    "tests": 2,
+    "suites": 1,
+    "tests": 1,
     "passes": 1,
-    "pending": 1,
+    "pending": 0,
     "failures": 0,
-    "testsRegistered": 2,
-    "passPercent": 50,
-    "pendingPercent": 50,
+    "start": "2025-01-31T17:11:37.057Z",
+    "end": "2025-01-31T17:11:52.619Z",
+    "duration": 15562,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
     "other": 0,
     "hasOther": false,
     "skipped": 0,
-    "hasSkipped": false,
-    "start": "2025-01-31T17:11:37.057Z",
-    "end": "2025-01-31T17:11:52.619Z",
-    "duration": 15562
+    "hasSkipped": false
   },
   "results": [
-    {
-      "uuid": "2e827db2-6df8-429b-9dd2-e96e15f8e168",
-      "title": "",
-      "fullFile": "cypress/e2e/spec01.cy.ts",
-      "file": "cypress/e2e/spec01.cy.ts",
-      "beforeHooks": [],
-      "afterHooks": [],
-      "tests": [],
-      "suites": [
-        {
-          "uuid": "1c419240-bad4-41b1-bd2d-d4bb73699f27",
-          "title": "Connect to database",
-          "fullFile": "",
-          "file": "",
-          "beforeHooks": [],
-          "afterHooks": [],
-          "tests": [
-            {
-              "title": "can call a database and execute a query",
-              "fullTitle": "Connect to database can call a database and execute a query",
-              "timedOut": null,
-              "duration": 0,
-              "state": "pending",
-              "speed": null,
-              "pass": false,
-              "fail": false,
-              "pending": true,
-              "context": null,
-              "code": "cy.sqlServer(query).then((result) => {\n    cy.log(result.recordset[0].JobId);\n});",
-              "err": {},
-              "uuid": "71af0a1c-1709-484f-a736-20af61e6741d",
-              "parentUUID": "1c419240-bad4-41b1-bd2d-d4bb73699f27",
-              "isHook": false,
-              "skipped": false
-            }
-          ],
-          "suites": [],
-          "passes": [],
-          "failures": [],
-          "pending": [
-            "71af0a1c-1709-484f-a736-20af61e6741d"
-          ],
-          "skipped": [],
-          "duration": 0,
-          "root": false,
-          "rootEmpty": false,
-          "_timeout": 2000
-        }
-      ],
-      "passes": [],
-      "failures": [],
-      "pending": [],
-      "skipped": [],
-      "duration": 0,
-      "root": true,
-      "rootEmpty": true,
-      "_timeout": 2000
-    },
     {
       "uuid": "92f1f959-b62d-4d6a-8741-abdc4b00e411",
       "title": "",
