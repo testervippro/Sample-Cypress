@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define Jenkins server URL and email recipient
-        JENKINS_SERVER_URL = 'https://ed1f-116-96-46-98.ngrok-free.app'
+        JENKINS_SERVER_URL = 'f-116-96-46-98.ngrok-free.app'
         EMAIL_RECIPIENT = '@gmail.com' // Consider using Jenkins credentials for security
         TELEGRAM_TOKEN = '781845500:AAEAJ5GDawMGUC4Ofv9SvD3YBn5UGmVii7Q' // Your Telegram bot token
         TELEGRAM_CHAT_ID = '5321745388' // Your Telegram chat ID
