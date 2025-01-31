@@ -31,14 +31,16 @@
   "version": "1.0.0",
   "scripts": {
     "cy:run": "cypress run",
-    "cy:parallel": "cypress-parallel -s cy:run -t 2 -d cypress/e2e",
+    "cy:parallel": "cypress-parallel -s cy:run -t 2 -d cypress/e2e --reporter mochawesome --reporterOptions reportDir=cypress/reports,overwrite=false",
     "cleanup": "rm -fr cypress/reports",
     "merge_reports": "mochawesome-merge cypress/reports/mochawesome-report/*.json > output.json",
+    "merge_reports-parallel": "mochawesome-merge cypress/reports/*.json > output.json",
     "mochawesome_report": "marge --reportDir cypress/reports/mochawesome-html-report -t Cypress_Test_Report -p Cypress_HMTL_Report -f Cypress_HMTL_Report --charts true output.json",
     "cy_dashboard": "cypress run --record --key aeed922c-98af-4143-9e77-f97c6c900754",
     "cy:run-report": "npm run cleanup && npx cypress run &&npm run merge_reports && npm run mochawesome_report",
-    "cy:run-report-junit": "npm run cleanup && npx cypress run --spec 'cypress/e2e/**/*.cy.ts' --reporter junit --reporter-options mochaFile=cypress/reports/junit/test-results.xml",
-    "cy:run-report-both": "npm run cleanup && npx cypress run --reporter cypress-multi-reporters --reporter-options '{\"reporterEnabled\":\"mochawesome,mocha-junit-reporter\",\"mochawesomeReporterOptions\":{\"reportDir\":\"cypress/reports/mochawesome-report\",\"reportFilename\":\"report\",\"overwrite\":true,\"html\":false,\"json\":true},\"mochaJunitReporterOptions\":{\"mochaFile\":\"cypress/reports/junit/test-results.xml\"}}' && npm run merge_reports && npm run mochawesome_report"
+    "cy:parallel-report": "npm run cleanup && npm run cy:parallel &&npm run merge_reports-parallel && npm run mochawesome_report"
+  
+  
   },
   "keywords": [],
   "author": "",
