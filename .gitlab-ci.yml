@@ -1,0 +1,25 @@
+stages:
+  - test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - node_modules/
+    - .npm/
+
+test:
+  image: cypress/browsers:22.12.0
+  stage: test
+  script:
+    # install dependencies
+    - npm ci
+    # start the server in the background
+    # - npm start &
+    # run Cypress tests
+    - npx cypress run --browser firefox
+  artifacts:
+    when: always
+    paths:
+      - cypress/videos/**/*.mp4
+      - cypress/screenshots/**/*.png
+    expire_in: 1 day
