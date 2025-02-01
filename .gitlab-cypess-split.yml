@@ -1,0 +1,103 @@
+# Define stages explicitly
+stages:
+  - build
+  - test
+  - report  # Custom 'report' stage
+
+## Set environment variables for folders in "cache" job settings for npm modules and Cypress binary
+variables:
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
+
+# Cache using branch name
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .cache/*
+    - cache/Cypress
+    - node_modules
+
+install_dependencies:
+  stage: build
+  image: cypress/base:16.14.2-slim
+  script:
+    # Install dependencies for the build stage
+    - npm ci
+    - npm install mochawesome-merge marge --save-dev
+    # Print Cypress binary path and cached versions for debugging
+    - npx cypress cache path
+    - npx cypress cache list
+
+test:
+  stage: test
+  image: cypress/base:16.14.2-slim
+  parallel: 3
+  script:
+    # Install necessary dependencies for the test stage
+    - npm ci
+    - npm install mochawesome-merge marge --save-dev
+    # Print CI environment variables for debugging
+    - npx @bahmutov/print-env CI_
+    # Run Cypress tests
+    - npx cypress run --env split=true
+  artifacts:
+    paths:
+      - cypress/videos/**/*  # Store Cypress videos as artifacts
+      - cypress/screenshots/**/*  # Store screenshots as artifacts
+      - cypress/results/**/*  # Store JSON reports as artifacts
+    expire_in: 1 hour  # Optional: Set expiration time for the artifacts
+
+report:
+  stage: report
+  needs:
+    - job: test  # Ensure test job completes before running report job
+      artifacts: true
+  image: node:16
+  script:
+    # Install npm dependencies for the report stage
+    - npm ci
+    - npm install mochawesome-merge marge --save-dev
+
+    # Install zip utility
+    - apt-get update && apt-get install -y zip
+
+    - echo "Merging test reports and generating final report"
+
+    # Prepare the folder for Mochawesome reports
+    - mkdir mochawesome
+    - mkdir -p mochawesome/screenshots mochawesome/videos mochawesome/results
+
+    # Copy videos, screenshots, and JSON reports into the mochawesome directory
+    - cp -r cypress/screenshots/* mochawesome/screenshots || true
+    - cp -r cypress/videos/* mochawesome/videos || true
+    - cp -r cypress/results/* mochawesome/results || true
+
+    # Show copied files for debugging purposes
+    - ls -lR mochawesome
+
+    # Run mochawesome-merge to merge the results
+    - npx mochawesome-merge mochawesome/results/*.json -o mochawesome/results/merged.json
+
+    # Show merged report file for debugging
+    - ls -lR mochawesome
+
+    # Run marge to generate the final HTML report
+    - npx marge mochawesome/results/merged.json --charts true --showHooks always --reportDir mochawesome/results --reportFilename index.html
+
+    # Zip the mochawesome folder
+    - zip -r mochawesome_results.zip mochawesome
+
+    # Show the zipped files for debugging
+    - ls -lR mochawesome_results.zip
+
+    # Send the zipped report to Telegram
+    - |
+      curl -X POST "https://api.telegram.org/bot891845500:AEAJ5GDawMGUC4Ofv9SvD3YBn5UGmVii7Q/sendDocument" \
+      -F chat_id="5321745388" \
+      -F document=@"mochawesome_results.zip"
+
+  artifacts:
+    when: always
+    expire_in: 1 hour
+    paths:
+      - mochawesome_results.zip  # Store the zipped mochawesome folder

@@ -29,6 +29,10 @@
   },
   "name": "cypress",
   "version": "1.0.0",
+
+  "cmt":" Other way to generate report run parallelhttps://github.com/LironEr/cypress-mochawesome-reporter/tree/master/examples/cypress-parallel",
+
+
   "scripts": {
     "cy:run": "cypress run",
     "cy:parallel": "cypress-parallel -s cy:run -t 2 -d cypress/e2e --reporter mochawesome --reporterOptions reportDir=cypress/reports,overwrite=false",
